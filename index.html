@@ -188,63 +188,185 @@
             padding-bottom: 15px;
         }
 
-        /* Castle/Quest screen */
+        /* Castle/Quest screen - ENHANCED */
+        .throne-room {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .king-portrait {
+            flex-shrink: 0;
+            width: 180px;
+            background: linear-gradient(145deg, #3d3d5c, #2a2a40);
+            border: 4px solid #c9a227;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5),
+                        inset 0 2px 0 rgba(255,255,255,0.1),
+                        0 0 20px rgba(201, 162, 39, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .king-portrait::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,215,0,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        #king-canvas {
+            width: 150px;
+            height: 180px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .king-title {
+            text-align: center;
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .king-speech-container {
+            flex: 1;
+        }
+
         .king-speech {
-            background: rgba(0,0,0,0.3);
-            border-left: 4px solid #c9a227;
-            padding: 15px 20px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(30,30,50,0.6));
+            border: 2px solid #c9a227;
+            border-radius: 15px;
+            padding: 20px 25px;
             font-style: italic;
-            font-size: 16px;
+            font-size: 17px;
+            line-height: 1.6;
+            position: relative;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .king-speech::before {
+            content: '"';
+            position: absolute;
+            top: 5px;
+            left: 15px;
+            font-size: 60px;
+            color: rgba(201, 162, 39, 0.3);
+            font-family: Georgia, serif;
         }
 
         .quest-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .quest-item {
-            background: rgba(0,0,0,0.3);
+            background: linear-gradient(145deg, #2d2d44, #1f1f30);
             border: 2px solid #555;
-            border-radius: 8px;
-            padding: 15px;
+            border-radius: 12px;
+            padding: 0;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .quest-item:hover {
             border-color: #c9a227;
-            background: rgba(201, 162, 39, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px rgba(201, 162, 39, 0.2);
         }
 
         .quest-item.completed {
             border-color: #27ae60;
-            opacity: 0.7;
         }
 
-        .quest-item.active {
-            border-color: #f39c12;
-            box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+        .quest-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .quest-enemy-portrait {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            border: 2px solid #c9a227;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .quest-info {
+            flex: 1;
         }
 
         .quest-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+        }
+
+        .quest-target {
+            font-size: 12px;
+            color: #e74c3c;
+        }
+
+        .quest-body {
+            padding: 15px;
         }
 
         .quest-desc {
             font-size: 14px;
             color: #a89a7a;
+            margin-bottom: 12px;
+        }
+
+        .quest-progress {
+            height: 8px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 4px;
+            overflow: hidden;
             margin-bottom: 10px;
         }
 
-        .quest-reward {
-            font-size: 13px;
-            color: #ffd700;
+        .quest-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+            transition: width 0.3s;
         }
+
+        .quest-reward {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 5px;
+        }
+
+        .reward-gold { color: #ffd700; }
+        .reward-xp { color: #9b59b6; }
 
         /* Shop screen */
         .shop-tabs {
@@ -560,63 +682,172 @@
         .log-entry.enemy-action { color: #e74c3c; }
         .log-entry.system { color: #f39c12; }
 
-        /* Arena screen */
+        /* Arena screen - ENHANCED */
         .arena-info {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(50,20,20,0.4));
+            border: 2px solid #8b0000;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(139,0,0,0.3);
         }
 
         .arena-tier {
-            font-size: 24px;
-            color: #c9a227;
+            font-size: 28px;
+            color: #ff4444;
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,68,68,0.5);
+        }
+
+        .arena-subtitle {
+            color: #a89a7a;
+            font-size: 14px;
         }
 
         .enemy-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
         }
 
         .enemy-card {
-            background: rgba(0,0,0,0.3);
-            border: 2px solid #555;
-            border-radius: 10px;
-            padding: 20px;
+            background: linear-gradient(145deg, #2d2d44, #1a1a2e);
+            border: 3px solid #444;
+            border-radius: 15px;
+            padding: 0;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+
+        .enemy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #e74c3c, transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .enemy-card:hover {
             border-color: #e74c3c;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 20px rgba(231,76,60,0.3);
         }
 
-        .enemy-sprite {
-            font-size: 60px;
-            margin-bottom: 10px;
+        .enemy-card:hover::before {
+            opacity: 1;
+        }
+
+        .enemy-card.boss {
+            border-color: #9b59b6;
+            background: linear-gradient(145deg, #3d2d44, #2a1a2e);
+        }
+
+        .enemy-card.boss:hover {
+            border-color: #8e44ad;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 25px rgba(142,68,173,0.4);
+        }
+
+        .enemy-portrait-container {
+            background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .enemy-portrait {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            border-radius: 50%;
+            border: 3px solid #555;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent);
+            box-shadow: inset 0 -5px 15px rgba(0,0,0,0.5),
+                        0 5px 15px rgba(0,0,0,0.3);
+            display: block;
+        }
+
+        .enemy-card-info {
+            padding: 15px;
         }
 
         .enemy-name {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 5px;
+            color: #fff;
         }
 
         .enemy-level {
+            display: inline-block;
+            padding: 3px 12px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
             color: #a89a7a;
+            font-size: 12px;
             margin-bottom: 10px;
         }
 
-        .enemy-reward {
-            color: #ffd700;
-            font-size: 14px;
+        .enemy-stats-mini {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 12px;
         }
+
+        .enemy-stat {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .enemy-stat-hp { color: #e74c3c; }
+        .enemy-stat-atk { color: #f39c12; }
+        .enemy-stat-def { color: #3498db; }
+
+        .enemy-reward {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-size: 13px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .enemy-reward span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .difficulty-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .diff-easy { background: #27ae60; color: #fff; }
+        .diff-medium { background: #f39c12; color: #fff; }
+        .diff-hard { background: #e74c3c; color: #fff; }
+        .diff-boss { background: #9b59b6; color: #fff; }
 
         /* XP Bar */
         .xp-bar-container {
@@ -803,19 +1034,28 @@
         <div id="main-content">
             <!-- Castle Screen -->
             <div id="castle-screen" class="screen active">
-                <h2 class="screen-title">Тронный Зал</h2>
-                <div class="king-speech" id="king-speech">
-                    "Приветствую тебя, воин! Наше королевство нуждается в твоей помощи. Выбери задание и докажи свою доблесть!"
+                <h2 class="screen-title">👑 Тронный Зал</h2>
+                <div class="throne-room">
+                    <div class="king-portrait">
+                        <canvas id="king-canvas" width="150" height="180"></canvas>
+                        <div class="king-title">Король Альдрик III</div>
+                    </div>
+                    <div class="king-speech-container">
+                        <div class="king-speech" id="king-speech">
+                            Приветствую тебя, воин! Наше королевство нуждается в твоей помощи. Выбери задание и докажи свою доблесть!
+                        </div>
+                    </div>
                 </div>
+                <h3 style="color:#c9a227; margin-bottom:15px; font-size:20px;">📜 Доступные Задания</h3>
                 <div class="quest-list" id="quest-list"></div>
             </div>
 
             <!-- Arena Screen -->
             <div id="arena-screen" class="screen">
-                <h2 class="screen-title">Арена</h2>
+                <h2 class="screen-title">⚔️ Арена Славы</h2>
                 <div class="arena-info">
-                    <div class="arena-tier" id="arena-tier">Ранг: Новичок</div>
-                    <p>Выбери противника для сражения</p>
+                    <div class="arena-tier" id="arena-tier">🏆 Ранг: Новичок</div>
+                    <p class="arena-subtitle">Выбери противника и докажи свою силу!</p>
                 </div>
                 <div class="enemy-list" id="enemy-list"></div>
             </div>
@@ -918,58 +1158,155 @@
                 { id: 'p4', name: 'Зелье маны', icon: '💧', mana: 30, price: 40 },
             ],
             enemies: [
-                { id: 'e1', name: 'Слабый гоблин', icon: '👺', level: 1, hp: 40, attack: 8, defense: 2, xp: 20, gold: 15 },
-                { id: 'e2', name: 'Крыса', icon: '🐀', level: 2, hp: 30, attack: 12, defense: 3, xp: 25, gold: 20 },
-                { id: 'e3', name: 'Скелет', icon: '💀', level: 3, hp: 60, attack: 15, defense: 5, xp: 40, gold: 35 },
-                { id: 'e4', name: 'Орк', icon: '👹', level: 5, hp: 100, attack: 22, defense: 10, xp: 70, gold: 60 },
-                { id: 'e5', name: 'Тролль', icon: '🧌', level: 7, hp: 180, attack: 30, defense: 15, xp: 120, gold: 100 },
-                { id: 'e6', name: 'Тёмный маг', icon: '🧙‍♂️', level: 10, hp: 150, attack: 45, defense: 12, xp: 200, gold: 180 },
-                { id: 'e7', name: 'Минотавр', icon: '🐂', level: 12, hp: 300, attack: 40, defense: 25, xp: 300, gold: 250 },
-                { id: 'e8', name: 'Дракон', icon: '🐉', level: 15, hp: 500, attack: 60, defense: 35, xp: 500, gold: 500 },
+                { id: 'e1', name: 'Слабый гоблин', icon: '👺', level: 1, hp: 40, attack: 8, defense: 2, xp: 20, gold: 15, desc: 'Мелкий зелёный пакостник' },
+                { id: 'e2', name: 'Крыса', icon: '🐀', level: 2, hp: 30, attack: 12, defense: 3, xp: 25, gold: 20, desc: 'Огромная подвальная крыса' },
+                { id: 'e9', name: 'Дикий волк', icon: '🐺', level: 2, hp: 45, attack: 14, defense: 4, xp: 30, gold: 25, desc: 'Голодный лесной хищник' },
+                { id: 'e3', name: 'Скелет', icon: '💀', level: 3, hp: 60, attack: 15, defense: 5, xp: 40, gold: 35, desc: 'Оживший воин прошлого' },
+                { id: 'e10', name: 'Призрак', icon: '👻', level: 4, hp: 50, attack: 18, defense: 3, xp: 50, gold: 45, desc: 'Неупокоенная душа' },
+                { id: 'e4', name: 'Орк', icon: '👹', level: 5, hp: 100, attack: 22, defense: 10, xp: 70, gold: 60, desc: 'Могучий зеленокожий воин' },
+                { id: 'e11', name: 'Паук-гигант', icon: '🕷️', level: 6, hp: 80, attack: 25, defense: 8, xp: 85, gold: 75, desc: 'Ядовитый обитатель пещер' },
+                { id: 'e5', name: 'Тролль', icon: '🧌', level: 7, hp: 180, attack: 30, defense: 15, xp: 120, gold: 100, desc: 'Огромный регенерирующий монстр' },
+                { id: 'e12', name: 'Медуза', icon: '🐍', level: 8, hp: 120, attack: 35, defense: 12, xp: 150, gold: 130, desc: 'Взгляд обращает в камень' },
+                { id: 'e6', name: 'Тёмный маг', icon: '🧙‍♂️', level: 10, hp: 150, attack: 45, defense: 12, xp: 200, gold: 180, boss: true, desc: 'Повелитель тёмных искусств' },
+                { id: 'e7', name: 'Минотавр', icon: '🐂', level: 12, hp: 300, attack: 40, defense: 25, xp: 300, gold: 250, boss: true, desc: 'Страж лабиринта' },
+                { id: 'e13', name: 'Демон', icon: '👿', level: 14, hp: 400, attack: 55, defense: 30, xp: 400, gold: 400, boss: true, desc: 'Порождение ада' },
+                { id: 'e8', name: 'Дракон', icon: '🐉', level: 15, hp: 500, attack: 60, defense: 35, xp: 500, gold: 500, boss: true, desc: 'Древний повелитель огня' },
+                { id: 'e14', name: 'Лич', icon: '☠️', level: 18, hp: 450, attack: 70, defense: 28, xp: 650, gold: 700, boss: true, desc: 'Бессмертный некромант' },
+                { id: 'e15', name: 'Тёмный Лорд', icon: '🦹', level: 20, hp: 800, attack: 85, defense: 45, xp: 1000, gold: 1000, boss: true, desc: 'Древнее Зло пробудилось' },
             ],
             quests: [
                 {
                     id: 'q1',
                     title: 'Первая кровь',
-                    desc: 'Победи 3 гоблинов в арене',
+                    desc: 'Докажи что достоин звания воина',
                     target: { type: 'kill', enemy: 'e1', count: 3 },
                     reward: { gold: 100, xp: 50 },
                     completed: false,
                     progress: 0
                 },
                 {
+                    id: 'q6',
+                    title: 'Крысиная напасть',
+                    desc: 'Очисти подвалы замка от грызунов',
+                    target: { type: 'kill', enemy: 'e2', count: 5 },
+                    reward: { gold: 120, xp: 60 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q7',
+                    title: 'Волчья стая',
+                    desc: 'Защити деревню от волков',
+                    target: { type: 'kill', enemy: 'e9', count: 4 },
+                    reward: { gold: 150, xp: 80 },
+                    completed: false,
+                    progress: 0
+                },
+                {
                     id: 'q2',
                     title: 'Очистка подземелий',
-                    desc: 'Уничтожь 5 скелетов',
+                    desc: 'Упокой восставших мертвецов',
                     target: { type: 'kill', enemy: 'e3', count: 5 },
                     reward: { gold: 200, xp: 100 },
                     completed: false,
                     progress: 0
                 },
                 {
+                    id: 'q8',
+                    title: 'Изгнание духов',
+                    desc: 'Освободи старое кладбище от призраков',
+                    target: { type: 'kill', enemy: 'e10', count: 3 },
+                    reward: { gold: 250, xp: 130 },
+                    completed: false,
+                    progress: 0
+                },
+                {
                     id: 'q3',
                     title: 'Орочья угроза',
-                    desc: 'Победи 3 орков',
+                    desc: 'Останови набег орков на границе',
                     target: { type: 'kill', enemy: 'e4', count: 3 },
                     reward: { gold: 350, xp: 180 },
                     completed: false,
                     progress: 0
                 },
                 {
+                    id: 'q9',
+                    title: 'Логово пауков',
+                    desc: 'Зачисти пещеры от гигантских пауков',
+                    target: { type: 'kill', enemy: 'e11', count: 4 },
+                    reward: { gold: 400, xp: 220 },
+                    completed: false,
+                    progress: 0
+                },
+                {
                     id: 'q4',
                     title: 'Охота на троллей',
-                    desc: 'Убей 2 троллей',
+                    desc: 'Истреби троллей в горах',
                     target: { type: 'kill', enemy: 'e5', count: 2 },
                     reward: { gold: 500, xp: 300 },
                     completed: false,
                     progress: 0
                 },
                 {
+                    id: 'q10',
+                    title: 'Каменный взгляд',
+                    desc: 'Убей медузу в болотах',
+                    target: { type: 'kill', enemy: 'e12', count: 1 },
+                    reward: { gold: 600, xp: 350 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q11',
+                    title: 'Тёмная башня',
+                    desc: 'Победи тёмного мага в его башне',
+                    target: { type: 'kill', enemy: 'e6', count: 1 },
+                    reward: { gold: 700, xp: 400 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q12',
+                    title: 'Лабиринт ужаса',
+                    desc: 'Сразись с минотавром-стражем',
+                    target: { type: 'kill', enemy: 'e7', count: 1 },
+                    reward: { gold: 800, xp: 500 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q13',
+                    title: 'Врата ада',
+                    desc: 'Закрой портал - убей демона',
+                    target: { type: 'kill', enemy: 'e13', count: 1 },
+                    reward: { gold: 900, xp: 600 },
+                    completed: false,
+                    progress: 0
+                },
+                {
                     id: 'q5',
                     title: 'Драконоборец',
-                    desc: 'Победи дракона!',
+                    desc: 'Победи древнего дракона!',
                     target: { type: 'kill', enemy: 'e8', count: 1 },
                     reward: { gold: 1000, xp: 800 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q14',
+                    title: 'Смерть бессмертному',
+                    desc: 'Уничтожь филактерию лича',
+                    target: { type: 'kill', enemy: 'e14', count: 1 },
+                    reward: { gold: 1500, xp: 1000 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q15',
+                    title: 'Конец Тьмы',
+                    desc: 'Сверги Тёмного Лорда навсегда!',
+                    target: { type: 'kill', enemy: 'e15', count: 1 },
+                    reward: { gold: 2500, xp: 2000 },
                     completed: false,
                     progress: 0
                 },
@@ -1064,12 +1401,19 @@
             enemyTypes: {
                 'e1': { color: '#4CAF50', type: 'goblin', size: 0.8 },
                 'e2': { color: '#795548', type: 'rat', size: 0.6 },
+                'e9': { color: '#607D8B', type: 'wolf', size: 0.9 },
                 'e3': { color: '#ECEFF1', type: 'skeleton', size: 1 },
+                'e10': { color: '#B0BEC5', type: 'ghost', size: 1 },
                 'e4': { color: '#8BC34A', type: 'orc', size: 1.3 },
+                'e11': { color: '#4A148C', type: 'spider', size: 1.1 },
                 'e5': { color: '#607D8B', type: 'troll', size: 1.5 },
+                'e12': { color: '#4CAF50', type: 'medusa', size: 1.2 },
                 'e6': { color: '#9C27B0', type: 'mage', size: 1 },
                 'e7': { color: '#795548', type: 'minotaur', size: 1.6 },
-                'e8': { color: '#F44336', type: 'dragon', size: 1.8 }
+                'e13': { color: '#B71C1C', type: 'demon', size: 1.4 },
+                'e8': { color: '#F44336', type: 'dragon', size: 1.8 },
+                'e14': { color: '#1A237E', type: 'lich', size: 1.3 },
+                'e15': { color: '#000000', type: 'darklord', size: 2.0 }
             },
 
             init() {
@@ -2562,33 +2906,528 @@
             });
         });
 
+        // ===================== PORTRAIT DRAWING SYSTEM =====================
+        const Portraits = {
+            // Draw king portrait
+            drawKing(canvas) {
+                const ctx = canvas.getContext('2d');
+                const w = canvas.width;
+                const h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+
+                // Background gradient
+                const bg = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w/2);
+                bg.addColorStop(0, '#2a2040');
+                bg.addColorStop(1, '#1a1030');
+                ctx.fillStyle = bg;
+                ctx.fillRect(0, 0, w, h);
+
+                // Body - royal robe
+                ctx.fillStyle = '#8B0000';
+                ctx.beginPath();
+                ctx.moveTo(w*0.25, h);
+                ctx.quadraticCurveTo(w*0.3, h*0.7, w*0.35, h*0.55);
+                ctx.lineTo(w*0.65, h*0.55);
+                ctx.quadraticCurveTo(w*0.7, h*0.7, w*0.75, h);
+                ctx.fill();
+
+                // Gold trim on robe
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(w*0.35, h*0.55);
+                ctx.lineTo(w*0.35, h*0.9);
+                ctx.moveTo(w*0.65, h*0.55);
+                ctx.lineTo(w*0.65, h*0.9);
+                ctx.stroke();
+
+                // Fur collar
+                ctx.fillStyle = '#F5F5DC';
+                ctx.beginPath();
+                ctx.ellipse(w*0.5, h*0.52, w*0.18, h*0.06, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Neck
+                ctx.fillStyle = '#DEB887';
+                ctx.fillRect(w*0.42, h*0.38, w*0.16, h*0.15);
+
+                // Head
+                const headGrad = ctx.createRadialGradient(w*0.45, h*0.25, 0, w*0.5, h*0.28, w*0.15);
+                headGrad.addColorStop(0, '#FFDAB9');
+                headGrad.addColorStop(1, '#DEB887');
+                ctx.fillStyle = headGrad;
+                ctx.beginPath();
+                ctx.ellipse(w*0.5, h*0.28, w*0.15, h*0.13, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Crown
+                const crownGrad = ctx.createLinearGradient(w*0.32, h*0.1, w*0.68, h*0.1);
+                crownGrad.addColorStop(0, '#DAA520');
+                crownGrad.addColorStop(0.5, '#FFD700');
+                crownGrad.addColorStop(1, '#DAA520');
+                ctx.fillStyle = crownGrad;
+
+                // Crown base
+                ctx.fillRect(w*0.32, h*0.15, w*0.36, h*0.06);
+
+                // Crown points
+                ctx.beginPath();
+                ctx.moveTo(w*0.32, h*0.15);
+                ctx.lineTo(w*0.35, h*0.06);
+                ctx.lineTo(w*0.42, h*0.12);
+                ctx.lineTo(w*0.5, h*0.04);
+                ctx.lineTo(w*0.58, h*0.12);
+                ctx.lineTo(w*0.65, h*0.06);
+                ctx.lineTo(w*0.68, h*0.15);
+                ctx.closePath();
+                ctx.fill();
+
+                // Jewels on crown
+                ctx.fillStyle = '#FF0000';
+                ctx.beginPath();
+                ctx.arc(w*0.5, h*0.08, w*0.03, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#0000FF';
+                ctx.beginPath();
+                ctx.arc(w*0.38, h*0.12, w*0.02, 0, Math.PI * 2);
+                ctx.arc(w*0.62, h*0.12, w*0.02, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Eyes
+                ctx.fillStyle = '#FFF';
+                ctx.beginPath();
+                ctx.ellipse(w*0.43, h*0.26, w*0.035, h*0.025, 0, 0, Math.PI * 2);
+                ctx.ellipse(w*0.57, h*0.26, w*0.035, h*0.025, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#4169E1';
+                ctx.beginPath();
+                ctx.arc(w*0.43, h*0.26, w*0.02, 0, Math.PI * 2);
+                ctx.arc(w*0.57, h*0.26, w*0.02, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(w*0.43, h*0.26, w*0.01, 0, Math.PI * 2);
+                ctx.arc(w*0.57, h*0.26, w*0.01, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Eyebrows
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(w*0.38, h*0.23);
+                ctx.quadraticCurveTo(w*0.43, h*0.21, w*0.48, h*0.23);
+                ctx.moveTo(w*0.52, h*0.23);
+                ctx.quadraticCurveTo(w*0.57, h*0.21, w*0.62, h*0.23);
+                ctx.stroke();
+
+                // Nose
+                ctx.strokeStyle = '#C9A77C';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(w*0.5, h*0.27);
+                ctx.lineTo(w*0.48, h*0.32);
+                ctx.lineTo(w*0.5, h*0.33);
+                ctx.stroke();
+
+                // Beard
+                ctx.fillStyle = '#C0C0C0';
+                ctx.beginPath();
+                ctx.moveTo(w*0.38, h*0.35);
+                ctx.quadraticCurveTo(w*0.35, h*0.45, w*0.4, h*0.52);
+                ctx.quadraticCurveTo(w*0.5, h*0.58, w*0.6, h*0.52);
+                ctx.quadraticCurveTo(w*0.65, h*0.45, w*0.62, h*0.35);
+                ctx.fill();
+
+                // Mustache
+                ctx.beginPath();
+                ctx.moveTo(w*0.42, h*0.36);
+                ctx.quadraticCurveTo(w*0.35, h*0.38, w*0.32, h*0.42);
+                ctx.quadraticCurveTo(w*0.38, h*0.40, w*0.48, h*0.37);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(w*0.58, h*0.36);
+                ctx.quadraticCurveTo(w*0.65, h*0.38, w*0.68, h*0.42);
+                ctx.quadraticCurveTo(w*0.62, h*0.40, w*0.52, h*0.37);
+                ctx.fill();
+
+                // Mouth hint
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(w*0.45, h*0.37);
+                ctx.quadraticCurveTo(w*0.5, h*0.39, w*0.55, h*0.37);
+                ctx.stroke();
+
+                // Scepter
+                ctx.fillStyle = '#DAA520';
+                ctx.fillRect(w*0.72, h*0.4, w*0.04, h*0.55);
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(w*0.74, h*0.38, w*0.06, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#FF0000';
+                ctx.beginPath();
+                ctx.arc(w*0.74, h*0.38, w*0.03, 0, Math.PI * 2);
+                ctx.fill();
+            },
+
+            // Draw enemy portrait on canvas
+            drawEnemy(canvas, enemyId) {
+                const ctx = canvas.getContext('2d');
+                const w = canvas.width;
+                const h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+
+                const enemy = GameData.enemies.find(e => e.id === enemyId);
+                if (!enemy) return;
+
+                // Background based on enemy type
+                const colors = {
+                    'e1': ['#2d4a2d', '#1a2d1a'], // Goblin - green
+                    'e2': ['#3d3d3d', '#1a1a1a'], // Rat - gray
+                    'e9': ['#2d3d4a', '#1a2a3a'], // Wolf - blue-gray
+                    'e3': ['#4a4a5a', '#2a2a3a'], // Skeleton - purple-gray
+                    'e10': ['#3a4a5a', '#1a2a3a'], // Ghost - pale blue
+                    'e4': ['#4a3d2d', '#2d2a1a'], // Orc - brown-green
+                    'e11': ['#3a2a3a', '#1a1a2a'], // Spider - dark purple
+                    'e5': ['#4a5a4a', '#2a3a2a'], // Troll - moss green
+                    'e12': ['#3a4a3a', '#1a2a1a'], // Medusa - swamp green
+                    'e6': ['#4a2a5a', '#2a1a3a'], // Mage - purple
+                    'e7': ['#5a4a3a', '#3a2a1a'], // Minotaur - brown
+                    'e13': ['#5a2a2a', '#3a1a1a'], // Demon - dark red
+                    'e8': ['#5a3a2a', '#3a1a0a'], // Dragon - orange-red
+                    'e14': ['#3a3a4a', '#1a1a2a'], // Lich - cold blue
+                    'e15': ['#2a1a3a', '#0a0a1a'], // Dark Lord - black-purple
+                };
+
+                const [c1, c2] = colors[enemyId] || ['#3a3a3a', '#1a1a1a'];
+                const bg = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w*0.7);
+                bg.addColorStop(0, c1);
+                bg.addColorStop(1, c2);
+                ctx.fillStyle = bg;
+                ctx.beginPath();
+                ctx.arc(w/2, h/2, w*0.48, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw based on enemy type
+                this.drawEnemyType(ctx, w, h, enemyId);
+
+                // Border glow for bosses
+                if (enemy.boss) {
+                    ctx.strokeStyle = '#9b59b6';
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = '#9b59b6';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.arc(w/2, h/2, w*0.46, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+            },
+
+            drawEnemyType(ctx, w, h, enemyId) {
+                const cx = w/2, cy = h/2;
+
+                switch(enemyId) {
+                    case 'e1': // Goblin
+                        // Green skin face
+                        ctx.fillStyle = '#4CAF50';
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy, w*0.3, h*0.35, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Pointy ears
+                        ctx.beginPath();
+                        ctx.moveTo(cx - w*0.25, cy - h*0.1);
+                        ctx.lineTo(cx - w*0.4, cy - h*0.3);
+                        ctx.lineTo(cx - w*0.2, cy - h*0.2);
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.moveTo(cx + w*0.25, cy - h*0.1);
+                        ctx.lineTo(cx + w*0.4, cy - h*0.3);
+                        ctx.lineTo(cx + w*0.2, cy - h*0.2);
+                        ctx.fill();
+                        // Evil eyes
+                        ctx.fillStyle = '#FF0';
+                        ctx.beginPath();
+                        ctx.ellipse(cx - w*0.1, cy - h*0.05, w*0.08, h*0.06, 0, 0, Math.PI*2);
+                        ctx.ellipse(cx + w*0.1, cy - h*0.05, w*0.08, h*0.06, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        ctx.fillStyle = '#000';
+                        ctx.beginPath();
+                        ctx.arc(cx - w*0.1, cy - h*0.05, w*0.03, 0, Math.PI*2);
+                        ctx.arc(cx + w*0.1, cy - h*0.05, w*0.03, 0, Math.PI*2);
+                        ctx.fill();
+                        // Evil grin
+                        ctx.strokeStyle = '#2E7D32';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy + h*0.15, w*0.15, 0.2, Math.PI - 0.2);
+                        ctx.stroke();
+                        break;
+
+                    case 'e2': // Rat
+                        // Body
+                        ctx.fillStyle = '#795548';
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy, w*0.25, h*0.2, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Ears
+                        ctx.fillStyle = '#F8BBD9';
+                        ctx.beginPath();
+                        ctx.ellipse(cx - w*0.15, cy - h*0.2, w*0.1, h*0.12, -0.3, 0, Math.PI*2);
+                        ctx.ellipse(cx + w*0.15, cy - h*0.2, w*0.1, h*0.12, 0.3, 0, Math.PI*2);
+                        ctx.fill();
+                        // Snout
+                        ctx.fillStyle = '#8D6E63';
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy + h*0.1, w*0.12, h*0.1, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Nose
+                        ctx.fillStyle = '#F8BBD9';
+                        ctx.beginPath();
+                        ctx.arc(cx, cy + h*0.15, w*0.05, 0, Math.PI*2);
+                        ctx.fill();
+                        // Red eyes
+                        ctx.fillStyle = '#F00';
+                        ctx.beginPath();
+                        ctx.arc(cx - w*0.08, cy - h*0.05, w*0.04, 0, Math.PI*2);
+                        ctx.arc(cx + w*0.08, cy - h*0.05, w*0.04, 0, Math.PI*2);
+                        ctx.fill();
+                        // Whiskers
+                        ctx.strokeStyle = '#333';
+                        ctx.lineWidth = 1;
+                        for (let i = -1; i <= 1; i += 2) {
+                            ctx.beginPath();
+                            ctx.moveTo(cx + i*w*0.05, cy + h*0.1);
+                            ctx.lineTo(cx + i*w*0.35, cy + h*0.05);
+                            ctx.moveTo(cx + i*w*0.05, cy + h*0.12);
+                            ctx.lineTo(cx + i*w*0.35, cy + h*0.15);
+                            ctx.stroke();
+                        }
+                        break;
+
+                    case 'e3': // Skeleton
+                        // Skull
+                        ctx.fillStyle = '#ECEFF1';
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy - h*0.05, w*0.25, h*0.3, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Eye sockets
+                        ctx.fillStyle = '#000';
+                        ctx.beginPath();
+                        ctx.ellipse(cx - w*0.1, cy - h*0.1, w*0.08, h*0.1, 0, 0, Math.PI*2);
+                        ctx.ellipse(cx + w*0.1, cy - h*0.1, w*0.08, h*0.1, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Red glowing eyes
+                        ctx.fillStyle = '#F00';
+                        ctx.shadowColor = '#F00';
+                        ctx.shadowBlur = 5;
+                        ctx.beginPath();
+                        ctx.arc(cx - w*0.1, cy - h*0.1, w*0.03, 0, Math.PI*2);
+                        ctx.arc(cx + w*0.1, cy - h*0.1, w*0.03, 0, Math.PI*2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        // Nose hole
+                        ctx.fillStyle = '#000';
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy + h*0.02);
+                        ctx.lineTo(cx - w*0.04, cy + h*0.1);
+                        ctx.lineTo(cx + w*0.04, cy + h*0.1);
+                        ctx.fill();
+                        // Teeth
+                        ctx.fillStyle = '#ECEFF1';
+                        ctx.strokeStyle = '#666';
+                        for (let i = 0; i < 6; i++) {
+                            ctx.fillRect(cx - w*0.15 + i*w*0.05, cy + h*0.15, w*0.04, h*0.1);
+                            ctx.strokeRect(cx - w*0.15 + i*w*0.05, cy + h*0.15, w*0.04, h*0.1);
+                        }
+                        break;
+
+                    case 'e4': // Orc
+                        // Green face
+                        ctx.fillStyle = '#558B2F';
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy, w*0.32, h*0.38, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Brow ridge
+                        ctx.fillStyle = '#33691E';
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy - h*0.2, w*0.28, h*0.08, 0, 0, Math.PI);
+                        ctx.fill();
+                        // Angry eyes
+                        ctx.fillStyle = '#FF0';
+                        ctx.beginPath();
+                        ctx.ellipse(cx - w*0.12, cy - h*0.08, w*0.06, h*0.05, -0.3, 0, Math.PI*2);
+                        ctx.ellipse(cx + w*0.12, cy - h*0.08, w*0.06, h*0.05, 0.3, 0, Math.PI*2);
+                        ctx.fill();
+                        ctx.fillStyle = '#000';
+                        ctx.beginPath();
+                        ctx.arc(cx - w*0.12, cy - h*0.08, w*0.025, 0, Math.PI*2);
+                        ctx.arc(cx + w*0.12, cy - h*0.08, w*0.025, 0, Math.PI*2);
+                        ctx.fill();
+                        // Big nose
+                        ctx.fillStyle = '#689F38';
+                        ctx.beginPath();
+                        ctx.ellipse(cx, cy + h*0.05, w*0.08, h*0.08, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Tusks
+                        ctx.fillStyle = '#F5F5DC';
+                        ctx.beginPath();
+                        ctx.moveTo(cx - w*0.15, cy + h*0.2);
+                        ctx.lineTo(cx - w*0.1, cy + h*0.05);
+                        ctx.lineTo(cx - w*0.08, cy + h*0.2);
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.moveTo(cx + w*0.15, cy + h*0.2);
+                        ctx.lineTo(cx + w*0.1, cy + h*0.05);
+                        ctx.lineTo(cx + w*0.08, cy + h*0.2);
+                        ctx.fill();
+                        break;
+
+                    case 'e8': // Dragon
+                        // Dragon head
+                        ctx.fillStyle = '#C62828';
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy - h*0.35);
+                        ctx.quadraticCurveTo(cx + w*0.35, cy - h*0.2, cx + w*0.25, cy + h*0.1);
+                        ctx.quadraticCurveTo(cx + w*0.15, cy + h*0.35, cx, cy + h*0.3);
+                        ctx.quadraticCurveTo(cx - w*0.15, cy + h*0.35, cx - w*0.25, cy + h*0.1);
+                        ctx.quadraticCurveTo(cx - w*0.35, cy - h*0.2, cx, cy - h*0.35);
+                        ctx.fill();
+                        // Horns
+                        ctx.fillStyle = '#5D4037';
+                        ctx.beginPath();
+                        ctx.moveTo(cx - w*0.15, cy - h*0.25);
+                        ctx.lineTo(cx - w*0.3, cy - h*0.45);
+                        ctx.lineTo(cx - w*0.1, cy - h*0.2);
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.moveTo(cx + w*0.15, cy - h*0.25);
+                        ctx.lineTo(cx + w*0.3, cy - h*0.45);
+                        ctx.lineTo(cx + w*0.1, cy - h*0.2);
+                        ctx.fill();
+                        // Eyes
+                        ctx.fillStyle = '#FF0';
+                        ctx.shadowColor = '#FF0';
+                        ctx.shadowBlur = 8;
+                        ctx.beginPath();
+                        ctx.ellipse(cx - w*0.1, cy - h*0.1, w*0.06, h*0.08, 0, 0, Math.PI*2);
+                        ctx.ellipse(cx + w*0.1, cy - h*0.1, w*0.06, h*0.08, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        ctx.fillStyle = '#000';
+                        ctx.beginPath();
+                        ctx.ellipse(cx - w*0.1, cy - h*0.1, w*0.02, h*0.06, 0, 0, Math.PI*2);
+                        ctx.ellipse(cx + w*0.1, cy - h*0.1, w*0.02, h*0.06, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Nostrils
+                        ctx.fillStyle = '#000';
+                        ctx.beginPath();
+                        ctx.ellipse(cx - w*0.04, cy + h*0.1, w*0.02, h*0.025, 0, 0, Math.PI*2);
+                        ctx.ellipse(cx + w*0.04, cy + h*0.1, w*0.02, h*0.025, 0, 0, Math.PI*2);
+                        ctx.fill();
+                        // Fire from nostrils
+                        ctx.fillStyle = '#FF6600';
+                        ctx.beginPath();
+                        ctx.moveTo(cx - w*0.04, cy + h*0.12);
+                        ctx.quadraticCurveTo(cx - w*0.08, cy + h*0.25, cx - w*0.02, cy + h*0.35);
+                        ctx.quadraticCurveTo(cx - w*0.06, cy + h*0.25, cx - w*0.04, cy + h*0.12);
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.moveTo(cx + w*0.04, cy + h*0.12);
+                        ctx.quadraticCurveTo(cx + w*0.08, cy + h*0.25, cx + w*0.02, cy + h*0.35);
+                        ctx.quadraticCurveTo(cx + w*0.06, cy + h*0.25, cx + w*0.04, cy + h*0.12);
+                        ctx.fill();
+                        // Scales pattern
+                        ctx.strokeStyle = '#8B0000';
+                        ctx.lineWidth = 1;
+                        for (let i = 0; i < 4; i++) {
+                            ctx.beginPath();
+                            ctx.arc(cx, cy - h*0.25 + i*h*0.12, w*0.2 - i*w*0.03, 0.8, Math.PI - 0.8);
+                            ctx.stroke();
+                        }
+                        break;
+
+                    default: // Generic monster
+                        ctx.font = `${w*0.5}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        const enemy = GameData.enemies.find(e => e.id === enemyId);
+                        ctx.fillText(enemy?.icon || '👹', cx, cy);
+                }
+            }
+        };
+
         // ===================== CASTLE / QUESTS =====================
         function renderQuests() {
+            // Draw king portrait
+            const kingCanvas = document.getElementById('king-canvas');
+            if (kingCanvas) Portraits.drawKing(kingCanvas);
+
+            // Update king speech based on completed quests
+            const completedCount = GameData.quests.filter(q => q.completed).length;
+            const speeches = [
+                "Приветствую тебя, воин! Наше королевство нуждается в твоей помощи. Выбери задание и докажи свою доблесть!",
+                "Ты делаешь успехи, герой! Продолжай очищать земли от монстров!",
+                "Твоя слава растёт! Враги начинают бояться твоего имени!",
+                "Великий воин! Ты уже победил многих врагов. Осталось сразить самых могучих!",
+                "Легендарный герой! Тёмные силы трепещут перед тобой!"
+            ];
+            const speechIndex = Math.min(Math.floor(completedCount / 3), speeches.length - 1);
+            document.getElementById('king-speech').textContent = speeches[speechIndex];
+
             const container = document.getElementById('quest-list');
             container.innerHTML = '';
 
             GameData.quests.forEach(quest => {
+                const enemy = GameData.enemies.find(e => e.id === quest.target.enemy);
+                const enemyName = enemy?.name || 'врага';
+                const progress = Math.min(quest.progress, quest.target.count);
+                const progressPercent = (progress / quest.target.count) * 100;
+
                 const div = document.createElement('div');
                 div.className = 'quest-item' + (quest.completed ? ' completed' : '');
 
-                const enemyName = GameData.enemies.find(e => e.id === quest.target.enemy)?.name || 'врага';
-                const progressText = quest.completed ? 'Выполнено!' : `${quest.progress}/${quest.target.count}`;
-
+                // Create quest card with portrait
+                const canvasId = `quest-enemy-${quest.id}`;
                 div.innerHTML = `
-                    <div class="quest-title">${quest.title} ${quest.completed ? '✅' : ''}</div>
-                    <div class="quest-desc">${quest.desc} (${progressText})</div>
-                    <div class="quest-reward">Награда: ${quest.reward.gold} золота, ${quest.reward.xp} опыта</div>
+                    <div class="quest-header">
+                        <canvas class="quest-enemy-portrait" id="${canvasId}" width="60" height="60"></canvas>
+                        <div class="quest-info">
+                            <div class="quest-title">${quest.completed ? '✅ ' : ''}${quest.title}</div>
+                            <div class="quest-target">🎯 ${enemyName} × ${quest.target.count}</div>
+                        </div>
+                    </div>
+                    <div class="quest-body">
+                        <div class="quest-desc">${quest.desc}</div>
+                        <div class="quest-progress">
+                            <div class="quest-progress-fill" style="width: ${quest.completed ? 100 : progressPercent}%"></div>
+                        </div>
+                        <div class="quest-reward">
+                            <span class="reward-item reward-gold">💰 ${quest.reward.gold}</span>
+                            <span class="reward-item reward-xp">⭐ ${quest.reward.xp} XP</span>
+                        </div>
+                    </div>
                 `;
 
                 if (!quest.completed && quest.progress >= quest.target.count) {
+                    const body = div.querySelector('.quest-body');
                     const claimBtn = document.createElement('button');
                     claimBtn.className = 'buy-btn';
-                    claimBtn.textContent = 'Забрать награду';
-                    claimBtn.onclick = () => claimQuest(quest);
-                    div.appendChild(claimBtn);
+                    claimBtn.style.width = '100%';
+                    claimBtn.style.marginTop = '10px';
+                    claimBtn.textContent = '🎁 Забрать награду!';
+                    claimBtn.onclick = (e) => { e.stopPropagation(); claimQuest(quest); };
+                    body.appendChild(claimBtn);
                 }
 
                 container.appendChild(div);
+
+                // Draw enemy portrait after adding to DOM
+                setTimeout(() => {
+                    const canvas = document.getElementById(canvasId);
+                    if (canvas) Portraits.drawEnemy(canvas, quest.target.enemy);
+                }, 0);
             });
         }
 
@@ -2612,20 +3451,54 @@
 
         // ===================== ARENA =====================
         function renderArena() {
+            // Update arena tier based on player level
+            const tierNames = ['Новичок', 'Боец', 'Воин', 'Ветеран', 'Чемпион', 'Легенда'];
+            const tierIndex = Math.min(Math.floor(Player.level / 4), tierNames.length - 1);
+            document.getElementById('arena-tier').textContent = `🏆 Ранг: ${tierNames[tierIndex]}`;
+
             const container = document.getElementById('enemy-list');
             container.innerHTML = '';
 
             GameData.enemies.forEach(enemy => {
                 const div = document.createElement('div');
-                div.className = 'enemy-card';
+                div.className = 'enemy-card' + (enemy.boss ? ' boss' : '');
+
+                // Difficulty indicator
+                const levelDiff = enemy.level - Player.level;
+                let diffClass, diffIcon;
+                if (levelDiff <= -3) { diffClass = 'diff-easy'; diffIcon = '✓'; }
+                else if (levelDiff <= 1) { diffClass = 'diff-medium'; diffIcon = '!'; }
+                else if (levelDiff <= 4) { diffClass = 'diff-hard'; diffIcon = '!!'; }
+                else { diffClass = 'diff-boss'; diffIcon = '☠'; }
+
+                const canvasId = `arena-enemy-${enemy.id}`;
                 div.innerHTML = `
-                    <div class="enemy-sprite">${enemy.icon}</div>
-                    <div class="enemy-name">${enemy.name}</div>
-                    <div class="enemy-level">Уровень ${enemy.level}</div>
-                    <div class="enemy-reward">💰 ${enemy.gold} | ⭐ ${enemy.xp} XP</div>
+                    <div class="difficulty-indicator ${diffClass}">${diffIcon}</div>
+                    <div class="enemy-portrait-container">
+                        <canvas class="enemy-portrait" id="${canvasId}" width="120" height="120"></canvas>
+                    </div>
+                    <div class="enemy-card-info">
+                        <div class="enemy-name">${enemy.name}</div>
+                        <div class="enemy-level">⚔️ Уровень ${enemy.level}</div>
+                        <div class="enemy-stats-mini">
+                            <span class="enemy-stat enemy-stat-hp">❤️ ${enemy.hp}</span>
+                            <span class="enemy-stat enemy-stat-atk">⚔️ ${enemy.attack}</span>
+                            <span class="enemy-stat enemy-stat-def">🛡️ ${enemy.defense}</span>
+                        </div>
+                    </div>
+                    <div class="enemy-reward">
+                        <span>💰 ${enemy.gold}</span>
+                        <span>⭐ ${enemy.xp}</span>
+                    </div>
                 `;
                 div.onclick = () => startBattle(enemy);
                 container.appendChild(div);
+
+                // Draw enemy portrait after adding to DOM
+                setTimeout(() => {
+                    const canvas = document.getElementById(canvasId);
+                    if (canvas) Portraits.drawEnemy(canvas, enemy.id);
+                }, 0);
             });
         }
 
