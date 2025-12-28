@@ -1,0 +1,3106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest RPG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'Medieval';
+            src: local('Times New Roman');
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8d5b7;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Header with player info */
+        #header {
+            background: linear-gradient(180deg, #2d2d44 0%, #1a1a2e 100%);
+            border: 3px solid #c9a227;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .player-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .player-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 5px 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 5px;
+            border: 1px solid #c9a227;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #a89a7a;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .gold-value { color: #ffd700; }
+        .level-value { color: #4fc3f7; }
+
+        /* HP/MP bars */
+        .bar-container {
+            width: 150px;
+        }
+
+        .bar {
+            height: 20px;
+            border-radius: 10px;
+            background: #1a1a1a;
+            border: 2px solid #555;
+            overflow: hidden;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .hp-fill {
+            background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .mp-fill {
+            background: linear-gradient(180deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .bar-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* Navigation */
+        #nav-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 3px solid #c9a227;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #4a4a6a 0%, #2d2d44 100%);
+            color: #e8d5b7;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(180deg, #5a5a7a 0%, #3d3d54 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(180deg, #c9a227 0%, #a68523 100%);
+            color: #1a1a2e;
+        }
+
+        /* Main content area */
+        #main-content {
+            background: linear-gradient(180deg, #2d2d44 0%, #1a1a2e 100%);
+            border: 3px solid #c9a227;
+            border-radius: 10px;
+            padding: 25px;
+            min-height: 500px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Screen titles */
+        .screen-title {
+            text-align: center;
+            font-size: 28px;
+            color: #ffd700;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            border-bottom: 2px solid #c9a227;
+            padding-bottom: 15px;
+        }
+
+        /* Castle/Quest screen */
+        .king-speech {
+            background: rgba(0,0,0,0.3);
+            border-left: 4px solid #c9a227;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 16px;
+        }
+
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quest-item {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quest-item:hover {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        .quest-item.completed {
+            border-color: #27ae60;
+            opacity: 0.7;
+        }
+
+        .quest-item.active {
+            border-color: #f39c12;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+        }
+
+        .quest-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .quest-desc {
+            font-size: 14px;
+            color: #a89a7a;
+            margin-bottom: 10px;
+        }
+
+        .quest-reward {
+            font-size: 13px;
+            color: #ffd700;
+        }
+
+        /* Shop screen */
+        .shop-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .shop-tab {
+            padding: 10px 20px;
+            border: 2px solid #555;
+            background: rgba(0,0,0,0.3);
+            color: #e8d5b7;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .shop-tab:hover, .shop-tab.active {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.2);
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .shop-item {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .shop-item:hover {
+            border-color: #c9a227;
+        }
+
+        .shop-item.owned {
+            border-color: #27ae60;
+        }
+
+        .shop-item.equipped {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .item-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .item-stats {
+            font-size: 12px;
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+
+        .item-price {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .buy-btn, .equip-btn {
+            margin-top: 10px;
+            padding: 8px 20px;
+            border: 2px solid #c9a227;
+            background: linear-gradient(180deg, #4a4a6a 0%, #2d2d44 100%);
+            color: #e8d5b7;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .buy-btn:hover, .equip-btn:hover {
+            background: linear-gradient(180deg, #c9a227 0%, #a68523 100%);
+            color: #1a1a2e;
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Character screen */
+        .char-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .char-stats-section, .char-equip-section {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #c9a227;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #555;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-name {
+            font-size: 16px;
+        }
+
+        .stat-row-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4fc3f7;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .stat-up-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #27ae60;
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .stat-up-btn:hover {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .stat-up-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .stat-points {
+            text-align: center;
+            padding: 15px;
+            background: rgba(39, 174, 96, 0.2);
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .stat-points-label {
+            font-size: 14px;
+            color: #a89a7a;
+        }
+
+        .stat-points-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .equip-slot {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #555;
+        }
+
+        .slot-icon {
+            font-size: 30px;
+            width: 50px;
+            text-align: center;
+        }
+
+        .slot-info {
+            flex: 1;
+        }
+
+        .slot-label {
+            font-size: 12px;
+            color: #a89a7a;
+        }
+
+        .slot-item {
+            font-weight: bold;
+        }
+
+        /* Battle screen */
+        .battle-arena {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #battle-canvas {
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #2d1a3e 50%, #1a2e1a 100%);
+            border-radius: 10px;
+            border: 2px solid #555;
+            display: block;
+        }
+
+        .battle-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .combatant-info {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+
+        .combatant-info.player-side {
+            border: 2px solid #3498db;
+        }
+
+        .combatant-info.enemy-side {
+            border: 2px solid #e74c3c;
+        }
+
+        .combatant-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .combatant-hp-bar {
+            height: 22px;
+            background: #1a1a1a;
+            border-radius: 11px;
+            overflow: hidden;
+            border: 2px solid #555;
+            position: relative;
+        }
+
+        .battle-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .battle-btn {
+            padding: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 3px solid #c9a227;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #4a4a6a 0%, #2d2d44 100%);
+            color: #e8d5b7;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .battle-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #c9a227 0%, #a68523 100%);
+            color: #1a1a2e;
+            transform: translateY(-2px);
+        }
+
+        .battle-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .battle-log {
+            background: rgba(0,0,0,0.4);
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+
+        .log-entry.player-action { color: #4fc3f7; }
+        .log-entry.enemy-action { color: #e74c3c; }
+        .log-entry.system { color: #f39c12; }
+
+        /* Arena screen */
+        .arena-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+
+        .arena-tier {
+            font-size: 24px;
+            color: #c9a227;
+            margin-bottom: 10px;
+        }
+
+        .enemy-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .enemy-card {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid #555;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .enemy-card:hover {
+            border-color: #e74c3c;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .enemy-sprite {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .enemy-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .enemy-level {
+            color: #a89a7a;
+            margin-bottom: 10px;
+        }
+
+        .enemy-reward {
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        /* XP Bar */
+        .xp-bar-container {
+            margin-top: 10px;
+        }
+
+        .xp-bar {
+            height: 8px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+            transition: width 0.5s ease;
+        }
+
+        .xp-text {
+            font-size: 11px;
+            color: #a89a7a;
+            text-align: center;
+            margin-top: 3px;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .notification.info {
+            background: #3498db;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+
+        /* Damage numbers */
+        .damage-popup {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            animation: damageFloat 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        .damage-popup.player-damage { color: #e74c3c; }
+        .damage-popup.enemy-damage { color: #4fc3f7; }
+        .damage-popup.heal { color: #27ae60; }
+        .damage-popup.critical { color: #f39c12; font-size: 32px; }
+
+        @keyframes damageFloat {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
+        }
+
+        /* Victory/Defeat screens */
+        .battle-result {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .result-title {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .result-title.victory { color: #ffd700; }
+        .result-title.defeat { color: #e74c3c; }
+
+        .result-rewards {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .continue-btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 3px solid #c9a227;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #c9a227 0%, #a68523 100%);
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .continue-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .char-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .battle-arena {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .battle-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .player-stats {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Header -->
+        <div id="header">
+            <div>
+                <div class="player-name" id="player-name">Герой</div>
+                <div class="xp-bar-container">
+                    <div class="xp-bar">
+                        <div class="xp-fill" id="xp-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="xp-text" id="xp-text">0 / 100 XP</div>
+                </div>
+            </div>
+            <div class="player-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Уровень</div>
+                    <div class="stat-value level-value" id="header-level">1</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar">
+                        <div class="bar-fill hp-fill" id="header-hp-fill" style="width: 100%"></div>
+                        <div class="bar-text" id="header-hp-text">100/100</div>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill mp-fill" id="header-mp-fill" style="width: 100%"></div>
+                        <div class="bar-text" id="header-mp-text">50/50</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Золото</div>
+                    <div class="stat-value gold-value" id="header-gold">100</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div id="nav-menu">
+            <button class="nav-btn active" data-screen="castle">Замок</button>
+            <button class="nav-btn" data-screen="arena">Арена</button>
+            <button class="nav-btn" data-screen="shop">Магазин</button>
+            <button class="nav-btn" data-screen="character">Персонаж</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content">
+            <!-- Castle Screen -->
+            <div id="castle-screen" class="screen active">
+                <h2 class="screen-title">Тронный Зал</h2>
+                <div class="king-speech" id="king-speech">
+                    "Приветствую тебя, воин! Наше королевство нуждается в твоей помощи. Выбери задание и докажи свою доблесть!"
+                </div>
+                <div class="quest-list" id="quest-list"></div>
+            </div>
+
+            <!-- Arena Screen -->
+            <div id="arena-screen" class="screen">
+                <h2 class="screen-title">Арена</h2>
+                <div class="arena-info">
+                    <div class="arena-tier" id="arena-tier">Ранг: Новичок</div>
+                    <p>Выбери противника для сражения</p>
+                </div>
+                <div class="enemy-list" id="enemy-list"></div>
+            </div>
+
+            <!-- Battle Screen -->
+            <div id="battle-screen" class="screen">
+                <h2 class="screen-title">БОЙ!</h2>
+                <div class="battle-arena">
+                    <canvas id="battle-canvas" width="850" height="280"></canvas>
+                </div>
+                <div class="battle-stats">
+                    <div class="combatant-info player-side">
+                        <div class="combatant-name" id="battle-player-name">Герой</div>
+                        <div class="combatant-hp-bar">
+                            <div class="bar-fill hp-fill" id="battle-player-hp" style="width: 100%"></div>
+                            <div class="bar-text" id="battle-player-hp-text">100/100</div>
+                        </div>
+                    </div>
+                    <div class="combatant-info enemy-side">
+                        <div class="combatant-name" id="battle-enemy-name">Враг</div>
+                        <div class="combatant-hp-bar">
+                            <div class="bar-fill hp-fill" id="battle-enemy-hp" style="width: 100%"></div>
+                            <div class="bar-text" id="battle-enemy-hp-text">50/50</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="battle-actions" id="battle-actions">
+                    <button class="battle-btn" data-action="attack">Атака</button>
+                    <button class="battle-btn" data-action="skill">Умение</button>
+                    <button class="battle-btn" data-action="defend">Защита</button>
+                    <button class="battle-btn" data-action="potion">Зелье</button>
+                </div>
+                <div class="battle-log" id="battle-log"></div>
+            </div>
+
+            <!-- Battle Result Screen -->
+            <div id="result-screen" class="screen">
+                <div class="battle-result">
+                    <div class="result-title" id="result-title">ПОБЕДА!</div>
+                    <div class="result-rewards" id="result-rewards"></div>
+                    <button class="continue-btn" id="continue-btn">Продолжить</button>
+                </div>
+            </div>
+
+            <!-- Shop Screen -->
+            <div id="shop-screen" class="screen">
+                <h2 class="screen-title">Магазин</h2>
+                <div class="shop-tabs">
+                    <button class="shop-tab active" data-tab="weapons">Оружие</button>
+                    <button class="shop-tab" data-tab="armor">Броня</button>
+                    <button class="shop-tab" data-tab="potions">Зелья</button>
+                </div>
+                <div class="shop-items" id="shop-items"></div>
+            </div>
+
+            <!-- Character Screen -->
+            <div id="character-screen" class="screen">
+                <h2 class="screen-title">Персонаж</h2>
+                <div class="char-layout">
+                    <div class="char-stats-section">
+                        <div class="stat-points" id="stat-points-container">
+                            <div class="stat-points-label">Очки характеристик</div>
+                            <div class="stat-points-value" id="stat-points">0</div>
+                        </div>
+                        <h3 class="section-title">Характеристики</h3>
+                        <div id="stats-list"></div>
+                    </div>
+                    <div class="char-equip-section">
+                        <h3 class="section-title">Снаряжение</h3>
+                        <div id="equipment-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================== GAME DATA =====================
+        const GameData = {
+            weapons: [
+                { id: 'w1', name: 'Деревянный меч', icon: '🗡️', attack: 5, price: 0, owned: true },
+                { id: 'w2', name: 'Железный меч', icon: '⚔️', attack: 12, price: 150 },
+                { id: 'w3', name: 'Стальной меч', icon: '🔪', attack: 20, price: 400 },
+                { id: 'w4', name: 'Серебряный клинок', icon: '🗡️', attack: 35, price: 800 },
+                { id: 'w5', name: 'Огненный меч', icon: '🔥', attack: 50, price: 1500 },
+                { id: 'w6', name: 'Легендарный меч', icon: '⚡', attack: 80, price: 3000 },
+            ],
+            armor: [
+                { id: 'a1', name: 'Тряпьё', icon: '👕', defense: 2, price: 0, owned: true },
+                { id: 'a2', name: 'Кожаная броня', icon: '🥋', defense: 8, price: 120 },
+                { id: 'a3', name: 'Кольчуга', icon: '🛡️', defense: 15, price: 350 },
+                { id: 'a4', name: 'Стальная броня', icon: '🦺', defense: 25, price: 700 },
+                { id: 'a5', name: 'Рыцарские доспехи', icon: '⚔️', defense: 40, price: 1200 },
+                { id: 'a6', name: 'Драконья броня', icon: '🐉', defense: 60, price: 2500 },
+            ],
+            potions: [
+                { id: 'p1', name: 'Малое зелье HP', icon: '🧪', heal: 50, price: 25 },
+                { id: 'p2', name: 'Среднее зелье HP', icon: '🧪', heal: 150, price: 75 },
+                { id: 'p3', name: 'Большое зелье HP', icon: '🧪', heal: 400, price: 200 },
+                { id: 'p4', name: 'Зелье маны', icon: '💧', mana: 30, price: 40 },
+            ],
+            enemies: [
+                { id: 'e1', name: 'Слабый гоблин', icon: '👺', level: 1, hp: 40, attack: 8, defense: 2, xp: 20, gold: 15 },
+                { id: 'e2', name: 'Крыса', icon: '🐀', level: 2, hp: 30, attack: 12, defense: 3, xp: 25, gold: 20 },
+                { id: 'e3', name: 'Скелет', icon: '💀', level: 3, hp: 60, attack: 15, defense: 5, xp: 40, gold: 35 },
+                { id: 'e4', name: 'Орк', icon: '👹', level: 5, hp: 100, attack: 22, defense: 10, xp: 70, gold: 60 },
+                { id: 'e5', name: 'Тролль', icon: '🧌', level: 7, hp: 180, attack: 30, defense: 15, xp: 120, gold: 100 },
+                { id: 'e6', name: 'Тёмный маг', icon: '🧙‍♂️', level: 10, hp: 150, attack: 45, defense: 12, xp: 200, gold: 180 },
+                { id: 'e7', name: 'Минотавр', icon: '🐂', level: 12, hp: 300, attack: 40, defense: 25, xp: 300, gold: 250 },
+                { id: 'e8', name: 'Дракон', icon: '🐉', level: 15, hp: 500, attack: 60, defense: 35, xp: 500, gold: 500 },
+            ],
+            quests: [
+                {
+                    id: 'q1',
+                    title: 'Первая кровь',
+                    desc: 'Победи 3 гоблинов в арене',
+                    target: { type: 'kill', enemy: 'e1', count: 3 },
+                    reward: { gold: 100, xp: 50 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q2',
+                    title: 'Очистка подземелий',
+                    desc: 'Уничтожь 5 скелетов',
+                    target: { type: 'kill', enemy: 'e3', count: 5 },
+                    reward: { gold: 200, xp: 100 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q3',
+                    title: 'Орочья угроза',
+                    desc: 'Победи 3 орков',
+                    target: { type: 'kill', enemy: 'e4', count: 3 },
+                    reward: { gold: 350, xp: 180 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q4',
+                    title: 'Охота на троллей',
+                    desc: 'Убей 2 троллей',
+                    target: { type: 'kill', enemy: 'e5', count: 2 },
+                    reward: { gold: 500, xp: 300 },
+                    completed: false,
+                    progress: 0
+                },
+                {
+                    id: 'q5',
+                    title: 'Драконоборец',
+                    desc: 'Победи дракона!',
+                    target: { type: 'kill', enemy: 'e8', count: 1 },
+                    reward: { gold: 1000, xp: 800 },
+                    completed: false,
+                    progress: 0
+                },
+            ]
+        };
+
+        // ===================== PLAYER STATE =====================
+        let Player = {
+            name: 'Герой',
+            level: 1,
+            xp: 0,
+            xpToNext: 100,
+            gold: 100,
+            hp: 100,
+            maxHp: 100,
+            mp: 50,
+            maxMp: 50,
+            potions: 3,
+            manaPotions: 1,
+            statPoints: 0,
+            stats: {
+                strength: 5,     // +2 attack per point
+                vitality: 5,     // +10 HP per point
+                agility: 5,      // +1% crit chance, +1 defense
+                intelligence: 5  // +5 MP per point, +skill damage
+            },
+            equipment: {
+                weapon: 'w1',
+                armor: 'a1'
+            },
+            ownedItems: ['w1', 'a1']
+        };
+
+        // ===================== BATTLE STATE =====================
+        let Battle = {
+            active: false,
+            enemy: null,
+            enemyHp: 0,
+            enemyMaxHp: 0,
+            playerDefending: false,
+            turn: 'player',
+            questEnemy: null
+        };
+
+        // ===================== EPIC STICKMAN ANIMATION SYSTEM =====================
+        const BattleAnim = {
+            canvas: null,
+            ctx: null,
+            animationId: null,
+
+            // Stickman positions
+            player: { x: 180, y: 180, baseX: 180, baseY: 180 },
+            enemy: { x: 670, y: 180, baseX: 670, baseY: 180 },
+
+            // Animation states
+            playerAnim: { type: 'idle', frame: 0, duration: 0 },
+            enemyAnim: { type: 'idle', frame: 0, duration: 0 },
+
+            // Particle systems
+            particles: [],
+            slashEffects: [],
+            sparks: [],
+            dustClouds: [],
+
+            // Screen shake
+            shake: { x: 0, y: 0, intensity: 0 },
+
+            // Clouds for background
+            clouds: [],
+
+            // Combo counter
+            combo: 0,
+            comboTimer: 0,
+
+            // Time for animations
+            time: 0,
+
+            // Damage popups
+            popups: [],
+
+            // Weapon colors based on weapon ID
+            weaponStyles: {
+                'w1': { color: '#8B4513', glow: null, name: 'wood', trail: '#A0522D' },
+                'w2': { color: '#A0A0A0', glow: null, name: 'iron', trail: '#808080' },
+                'w3': { color: '#C0C0C0', glow: '#E0E0E0', name: 'steel', trail: '#FFFFFF' },
+                'w4': { color: '#E8E8E8', glow: '#FFFFFF', name: 'silver', trail: '#F0F0FF' },
+                'w5': { color: '#FF6600', glow: '#FF0000', name: 'fire', trail: '#FFCC00' },
+                'w6': { color: '#FFD700', glow: '#FFFF00', name: 'legend', trail: '#FFFF88' }
+            },
+
+            // Enemy types for different drawings
+            enemyTypes: {
+                'e1': { color: '#4CAF50', type: 'goblin', size: 0.8 },
+                'e2': { color: '#795548', type: 'rat', size: 0.6 },
+                'e3': { color: '#ECEFF1', type: 'skeleton', size: 1 },
+                'e4': { color: '#8BC34A', type: 'orc', size: 1.3 },
+                'e5': { color: '#607D8B', type: 'troll', size: 1.5 },
+                'e6': { color: '#9C27B0', type: 'mage', size: 1 },
+                'e7': { color: '#795548', type: 'minotaur', size: 1.6 },
+                'e8': { color: '#F44336', type: 'dragon', size: 1.8 }
+            },
+
+            init() {
+                this.canvas = document.getElementById('battle-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                // Init clouds
+                this.clouds = [];
+                for (let i = 0; i < 5; i++) {
+                    this.clouds.push({
+                        x: Math.random() * this.canvas.width,
+                        y: 20 + Math.random() * 60,
+                        size: 30 + Math.random() * 40,
+                        speed: 0.2 + Math.random() * 0.3
+                    });
+                }
+            },
+
+            start() {
+                this.player.x = this.player.baseX;
+                this.player.y = this.player.baseY;
+                this.enemy.x = this.enemy.baseX;
+                this.enemy.y = this.enemy.baseY;
+                this.playerAnim = { type: 'idle', frame: 0, duration: 0 };
+                this.enemyAnim = { type: 'idle', frame: 0, duration: 0 };
+                this.popups = [];
+                this.particles = [];
+                this.slashEffects = [];
+                this.sparks = [];
+                this.dustClouds = [];
+                this.shake = { x: 0, y: 0, intensity: 0 };
+                this.combo = 0;
+                this.comboTimer = 0;
+                this.time = 0;
+                this.animate();
+            },
+
+            stop() {
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                    this.animationId = null;
+                }
+            },
+
+            animate() {
+                this.time++;
+                this.update();
+                this.draw();
+                this.animationId = requestAnimationFrame(() => this.animate());
+            },
+
+            // Spawn particles
+            spawnDust(x, y, count = 5) {
+                for (let i = 0; i < count; i++) {
+                    this.dustClouds.push({
+                        x: x + (Math.random() - 0.5) * 30,
+                        y: y + Math.random() * 10,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: -Math.random() * 2,
+                        size: 5 + Math.random() * 10,
+                        alpha: 0.6,
+                        color: '#8B7355'
+                    });
+                }
+            },
+
+            spawnSparks(x, y, count = 8, color = '#FFD700') {
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 3 + Math.random() * 5;
+                    this.sparks.push({
+                        x, y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 2,
+                        size: 2 + Math.random() * 3,
+                        alpha: 1,
+                        color: color
+                    });
+                }
+            },
+
+            spawnSlash(x, y, angle, color = '#FFFFFF') {
+                this.slashEffects.push({
+                    x, y, angle,
+                    progress: 0,
+                    color: color,
+                    length: 80
+                });
+            },
+
+            spawnMagicParticles(x, y, color = '#E040FB') {
+                for (let i = 0; i < 15; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = Math.random() * 30;
+                    this.particles.push({
+                        x: x + Math.cos(angle) * dist,
+                        y: y + Math.sin(angle) * dist,
+                        vx: Math.cos(angle) * 2,
+                        vy: Math.sin(angle) * 2 - 1,
+                        size: 3 + Math.random() * 5,
+                        alpha: 1,
+                        color: color,
+                        glow: true
+                    });
+                }
+            },
+
+            triggerShake(intensity = 10) {
+                this.shake.intensity = intensity;
+            },
+
+            update() {
+                // Update screen shake
+                if (this.shake.intensity > 0) {
+                    this.shake.x = (Math.random() - 0.5) * this.shake.intensity;
+                    this.shake.y = (Math.random() - 0.5) * this.shake.intensity;
+                    this.shake.intensity *= 0.9;
+                    if (this.shake.intensity < 0.5) this.shake.intensity = 0;
+                } else {
+                    this.shake.x = 0;
+                    this.shake.y = 0;
+                }
+
+                // Update combo timer
+                if (this.comboTimer > 0) {
+                    this.comboTimer--;
+                    if (this.comboTimer <= 0) this.combo = 0;
+                }
+
+                // Update clouds
+                this.clouds.forEach(c => {
+                    c.x += c.speed;
+                    if (c.x > this.canvas.width + 50) c.x = -50;
+                });
+
+                // Update player animation
+                if (this.playerAnim.duration > 0) {
+                    this.playerAnim.frame++;
+                    this.playerAnim.duration--;
+
+                    if (this.playerAnim.type === 'attack') {
+                        const progress = this.playerAnim.frame / 30;
+                        if (progress < 0.4) {
+                            this.player.x = this.player.baseX + (progress / 0.4) * 150;
+                            // Spawn dust while moving
+                            if (this.playerAnim.frame % 3 === 0) this.spawnDust(this.player.x - 30, 230);
+                        } else if (progress < 0.5) {
+                            this.player.x = this.player.baseX + 150;
+                            // Slash effect at impact
+                            if (this.playerAnim.frame === 15) {
+                                const weapon = this.weaponStyles[Player.equipment.weapon] || this.weaponStyles['w1'];
+                                this.spawnSlash(this.enemy.baseX - 40, 140, -0.3, weapon.trail);
+                                this.spawnSparks(this.enemy.baseX - 20, 150, 12, weapon.glow || '#FFAA00');
+                                this.triggerShake(8);
+                            }
+                        } else {
+                            this.player.x = this.player.baseX + 150 * (1 - (progress - 0.5) / 0.5);
+                        }
+                    } else if (this.playerAnim.type === 'skill') {
+                        const progress = this.playerAnim.frame / 40;
+                        if (progress < 0.4) {
+                            this.player.x = this.player.baseX + progress * 250;
+                            this.player.y = 180 - Math.sin(progress * Math.PI * 2.5) * 100;
+                            if (this.playerAnim.frame % 2 === 0) {
+                                this.spawnMagicParticles(this.player.x, this.player.y, '#4fc3f7');
+                            }
+                        } else if (progress < 0.5) {
+                            this.player.x = this.player.baseX + 250;
+                            this.player.y = 180;
+                            if (this.playerAnim.frame === 20) {
+                                const weapon = this.weaponStyles[Player.equipment.weapon] || this.weaponStyles['w1'];
+                                this.spawnSlash(this.enemy.baseX - 30, 120, -0.5, '#E040FB');
+                                this.spawnSlash(this.enemy.baseX - 20, 160, 0.3, weapon.trail);
+                                this.spawnSparks(this.enemy.baseX, 140, 20, '#E040FB');
+                                this.spawnMagicParticles(this.enemy.baseX, 140, '#E040FB');
+                                this.triggerShake(15);
+                            }
+                        } else {
+                            this.player.x = this.player.baseX + 250 * (1 - (progress - 0.5) / 0.5);
+                            this.player.y = 180;
+                        }
+                    } else if (this.playerAnim.type === 'defend') {
+                        this.player.x = this.player.baseX + Math.sin(this.playerAnim.frame * 0.5) * 5;
+                        if (this.playerAnim.frame % 5 === 0) {
+                            this.particles.push({
+                                x: this.player.x + 20,
+                                y: 130 + Math.random() * 40,
+                                vx: 0.5,
+                                vy: -1,
+                                size: 5,
+                                alpha: 0.8,
+                                color: '#4fc3f7',
+                                glow: true
+                            });
+                        }
+                    } else if (this.playerAnim.type === 'hit') {
+                        const progress = this.playerAnim.frame / 20;
+                        if (progress < 0.3) {
+                            this.player.x = this.player.baseX - 40 * (progress / 0.3);
+                            if (this.playerAnim.frame === 1) {
+                                this.spawnSparks(this.player.x + 20, 150, 10, '#FF6B6B');
+                                this.triggerShake(12);
+                            }
+                        } else {
+                            this.player.x = this.player.baseX - 40 * (1 - (progress - 0.3) / 0.7);
+                        }
+                    } else if (this.playerAnim.type === 'heal') {
+                        if (this.playerAnim.frame % 3 === 0) {
+                            const angle = Math.random() * Math.PI * 2;
+                            this.particles.push({
+                                x: this.player.x + Math.cos(angle) * 30,
+                                y: 180 + Math.sin(angle) * 30,
+                                vx: 0,
+                                vy: -2 - Math.random(),
+                                size: 4 + Math.random() * 4,
+                                alpha: 1,
+                                color: '#27ae60',
+                                glow: true
+                            });
+                        }
+                    }
+                } else {
+                    this.playerAnim.type = 'idle';
+                    this.player.x = this.player.baseX;
+                    this.player.y = 180;
+                }
+
+                // Update enemy animation
+                if (this.enemyAnim.duration > 0) {
+                    this.enemyAnim.frame++;
+                    this.enemyAnim.duration--;
+
+                    if (this.enemyAnim.type === 'attack') {
+                        const progress = this.enemyAnim.frame / 30;
+                        if (progress < 0.4) {
+                            this.enemy.x = this.enemy.baseX - (progress / 0.4) * 150;
+                            if (this.enemyAnim.frame % 3 === 0) this.spawnDust(this.enemy.x + 30, 230);
+                        } else if (progress < 0.5) {
+                            this.enemy.x = this.enemy.baseX - 150;
+                            if (this.enemyAnim.frame === 15) {
+                                this.spawnSlash(this.player.baseX + 40, 140, 0.3, '#FF4444');
+                                this.spawnSparks(this.player.baseX + 20, 150, 10, '#FF6B6B');
+                            }
+                        } else {
+                            this.enemy.x = this.enemy.baseX - 150 * (1 - (progress - 0.5) / 0.5);
+                        }
+                    } else if (this.enemyAnim.type === 'hit') {
+                        const progress = this.enemyAnim.frame / 20;
+                        if (progress < 0.3) {
+                            this.enemy.x = this.enemy.baseX + 40 * (progress / 0.3);
+                        } else {
+                            this.enemy.x = this.enemy.baseX + 40 * (1 - (progress - 0.3) / 0.7);
+                        }
+                    } else if (this.enemyAnim.type === 'death') {
+                        // Dramatic death
+                        if (this.enemyAnim.frame < 10) {
+                            this.enemy.x = this.enemy.baseX + Math.sin(this.enemyAnim.frame * 2) * 10;
+                        }
+                        if (this.enemyAnim.frame % 5 === 0 && this.enemyAnim.frame < 30) {
+                            this.spawnSparks(this.enemy.x, 140, 5, '#FF0000');
+                        }
+                    }
+                } else {
+                    this.enemyAnim.type = 'idle';
+                    this.enemy.x = this.enemy.baseX;
+                }
+
+                // Update particles
+                this.particles = this.particles.filter(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.05; // gravity
+                    p.alpha -= 0.02;
+                    return p.alpha > 0;
+                });
+
+                // Update sparks
+                this.sparks = this.sparks.filter(s => {
+                    s.x += s.vx;
+                    s.y += s.vy;
+                    s.vy += 0.15;
+                    s.alpha -= 0.03;
+                    s.size *= 0.97;
+                    return s.alpha > 0 && s.size > 0.5;
+                });
+
+                // Update dust
+                this.dustClouds = this.dustClouds.filter(d => {
+                    d.x += d.vx;
+                    d.y += d.vy;
+                    d.size += 0.5;
+                    d.alpha -= 0.02;
+                    return d.alpha > 0;
+                });
+
+                // Update slash effects
+                this.slashEffects = this.slashEffects.filter(s => {
+                    s.progress += 0.15;
+                    return s.progress < 1;
+                });
+
+                // Update popups
+                this.popups = this.popups.filter(p => {
+                    p.y -= 1.5;
+                    p.alpha -= 0.015;
+                    p.scale = Math.min(1.2, p.scale + 0.02);
+                    return p.alpha > 0;
+                });
+            },
+
+            draw() {
+                const ctx = this.ctx;
+                ctx.save();
+
+                // Apply screen shake
+                ctx.translate(this.shake.x, this.shake.y);
+
+                ctx.clearRect(-20, -20, this.canvas.width + 40, this.canvas.height + 40);
+
+                // Draw epic background
+                this.drawBackground();
+
+                // Draw dust clouds (behind characters)
+                this.dustClouds.forEach(d => {
+                    ctx.globalAlpha = d.alpha;
+                    ctx.fillStyle = d.color;
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.globalAlpha = 1;
+
+                // Draw shadows
+                this.drawShadow(this.player.x, 230, 35);
+                this.drawShadow(this.enemy.x, 230, 40);
+
+                // Draw player stickman
+                this.drawPlayerStickman(this.player.x, this.player.y);
+
+                // Draw enemy stickman
+                this.drawEnemyStickman(this.enemy.x, this.enemy.y);
+
+                // Draw slash effects
+                this.slashEffects.forEach(s => {
+                    this.drawSlash(s);
+                });
+
+                // Draw sparks
+                this.sparks.forEach(s => {
+                    ctx.globalAlpha = s.alpha;
+                    ctx.fillStyle = s.color;
+                    ctx.shadowColor = s.color;
+                    ctx.shadowBlur = 5;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                });
+                ctx.globalAlpha = 1;
+
+                // Draw particles
+                this.particles.forEach(p => {
+                    ctx.globalAlpha = p.alpha;
+                    if (p.glow) {
+                        ctx.shadowColor = p.color;
+                        ctx.shadowBlur = 10;
+                    }
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                });
+                ctx.globalAlpha = 1;
+
+                // Draw combo counter
+                if (this.combo > 1) {
+                    ctx.save();
+                    ctx.font = 'bold 24px Arial';
+                    ctx.fillStyle = '#FFD700';
+                    ctx.shadowColor = '#FF6600';
+                    ctx.shadowBlur = 10;
+                    ctx.textAlign = 'center';
+                    const comboScale = 1 + Math.sin(this.time * 0.2) * 0.1;
+                    ctx.translate(this.canvas.width / 2, 40);
+                    ctx.scale(comboScale, comboScale);
+                    ctx.fillText(`${this.combo}x COMBO!`, 0, 0);
+                    ctx.restore();
+                }
+
+                // Draw damage popups
+                this.popups.forEach(p => {
+                    ctx.save();
+                    ctx.globalAlpha = p.alpha;
+                    ctx.font = `bold ${(p.size || 24) * (p.scale || 1)}px Arial`;
+                    ctx.fillStyle = p.color;
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 4;
+                    ctx.textAlign = 'center';
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 10;
+                    ctx.strokeText(p.text, p.x, p.y);
+                    ctx.fillText(p.text, p.x, p.y);
+                    ctx.restore();
+                });
+
+                ctx.restore();
+            },
+
+            drawBackground() {
+                const ctx = this.ctx;
+
+                // Sky gradient
+                const skyGrad = ctx.createLinearGradient(0, 0, 0, 220);
+                skyGrad.addColorStop(0, '#1a0a2e');
+                skyGrad.addColorStop(0.5, '#2d1a4e');
+                skyGrad.addColorStop(1, '#4a2a6e');
+                ctx.fillStyle = skyGrad;
+                ctx.fillRect(0, 0, this.canvas.width, 220);
+
+                // Stars
+                ctx.fillStyle = '#FFFFFF';
+                for (let i = 0; i < 30; i++) {
+                    const x = (i * 73 + this.time * 0.1) % this.canvas.width;
+                    const y = (i * 37) % 100;
+                    const size = 1 + Math.sin(this.time * 0.05 + i) * 0.5;
+                    ctx.globalAlpha = 0.5 + Math.sin(this.time * 0.1 + i) * 0.3;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+
+                // Moon
+                ctx.fillStyle = '#E8E8F0';
+                ctx.shadowColor = '#FFFFFF';
+                ctx.shadowBlur = 30;
+                ctx.beginPath();
+                ctx.arc(750, 50, 30, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Clouds
+                ctx.fillStyle = 'rgba(100, 80, 120, 0.4)';
+                this.clouds.forEach(c => {
+                    ctx.beginPath();
+                    ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+                    ctx.arc(c.x + c.size * 0.6, c.y - 5, c.size * 0.7, 0, Math.PI * 2);
+                    ctx.arc(c.x - c.size * 0.5, c.y + 3, c.size * 0.6, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Mountains in background
+                ctx.fillStyle = '#1a1a3e';
+                ctx.beginPath();
+                ctx.moveTo(0, 220);
+                ctx.lineTo(100, 150);
+                ctx.lineTo(200, 190);
+                ctx.lineTo(350, 120);
+                ctx.lineTo(500, 170);
+                ctx.lineTo(650, 130);
+                ctx.lineTo(800, 160);
+                ctx.lineTo(850, 220);
+                ctx.closePath();
+                ctx.fill();
+
+                // Ground
+                const groundGrad = ctx.createLinearGradient(0, 220, 0, 280);
+                groundGrad.addColorStop(0, '#2a4a2a');
+                groundGrad.addColorStop(1, '#1a3a1a');
+                ctx.fillStyle = groundGrad;
+                ctx.fillRect(0, 220, this.canvas.width, 60);
+
+                // Grass blades
+                ctx.strokeStyle = '#3a5a3a';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < this.canvas.width; i += 15) {
+                    const h = 5 + Math.sin(i * 0.1 + this.time * 0.05) * 3;
+                    ctx.beginPath();
+                    ctx.moveTo(i, 220);
+                    ctx.lineTo(i + 3, 220 - h);
+                    ctx.stroke();
+                }
+
+                // Arena floor effect
+                ctx.fillStyle = 'rgba(100, 80, 60, 0.3)';
+                ctx.beginPath();
+                ctx.ellipse(this.canvas.width / 2, 240, 300, 20, 0, 0, Math.PI * 2);
+                ctx.fill();
+            },
+
+            drawShadow(x, y, size) {
+                const ctx = this.ctx;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.beginPath();
+                ctx.ellipse(x, y, size, size * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+            },
+
+            drawSlash(slash) {
+                const ctx = this.ctx;
+                ctx.save();
+                ctx.translate(slash.x, slash.y);
+                ctx.rotate(slash.angle);
+
+                const alpha = 1 - slash.progress;
+                ctx.globalAlpha = alpha;
+
+                // Slash arc
+                ctx.strokeStyle = slash.color;
+                ctx.lineWidth = 8 * (1 - slash.progress);
+                ctx.shadowColor = slash.color;
+                ctx.shadowBlur = 20;
+
+                ctx.beginPath();
+                ctx.arc(0, 0, slash.length * slash.progress, -0.5, 0.5);
+                ctx.stroke();
+
+                // Inner glow
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 3 * (1 - slash.progress);
+                ctx.beginPath();
+                ctx.arc(0, 0, slash.length * slash.progress, -0.3, 0.3);
+                ctx.stroke();
+
+                ctx.restore();
+            },
+
+            drawPlayerStickman(x, y) {
+                const ctx = this.ctx;
+                const weaponId = Player.equipment.weapon;
+                const weapon = this.weaponStyles[weaponId] || this.weaponStyles['w1'];
+                const isAttacking = this.playerAnim.type === 'attack' || this.playerAnim.type === 'skill';
+                const isDefending = this.playerAnim.type === 'defend';
+                const isHit = this.playerAnim.type === 'hit';
+                const isHealing = this.playerAnim.type === 'heal';
+
+                ctx.save();
+
+                // Breathing animation for idle
+                const breathe = this.playerAnim.type === 'idle' ? Math.sin(this.time * 0.08) * 2 : 0;
+
+                // Healing aura
+                if (isHealing) {
+                    ctx.shadowColor = '#00FF00';
+                    ctx.shadowBlur = 30 + Math.sin(this.time * 0.3) * 15;
+                    ctx.fillStyle = 'rgba(0, 255, 100, 0.2)';
+                    ctx.beginPath();
+                    ctx.arc(x, y - 20, 50 + Math.sin(this.time * 0.2) * 10, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Hit flash
+                if (isHit && this.playerAnim.frame % 4 < 2) {
+                    ctx.globalAlpha = 0.5;
+                }
+
+                // Body outline glow
+                ctx.shadowColor = '#4fc3f7';
+                ctx.shadowBlur = 8;
+
+                ctx.strokeStyle = '#4fc3f7';
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Head with face
+                ctx.beginPath();
+                ctx.arc(x, y - 60 + breathe, 20, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = '#4fc3f7';
+                ctx.fill();
+
+                // Eyes
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(x - 6, y - 62 + breathe, 4, 0, Math.PI * 2);
+                ctx.arc(x + 6, y - 62 + breathe, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#1a1a2e';
+                ctx.beginPath();
+                ctx.arc(x - 5, y - 61 + breathe, 2, 0, Math.PI * 2);
+                ctx.arc(x + 7, y - 61 + breathe, 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Body
+                ctx.strokeStyle = '#4fc3f7';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(x, y - 40 + breathe);
+                ctx.lineTo(x, y + 10);
+                ctx.stroke();
+
+                // Legs with running animation
+                const legAnim = isAttacking ? Math.sin(this.playerAnim.frame * 0.5) * 0.4 :
+                               (this.playerAnim.type === 'idle' ? Math.sin(this.time * 0.05) * 0.05 : 0);
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(x, y + 10);
+                ctx.lineTo(x - 20 - legAnim * 20, y + 55);
+                ctx.moveTo(x, y + 10);
+                ctx.lineTo(x + 20 + legAnim * 20, y + 55);
+                ctx.stroke();
+
+                // Arms
+                let armAngle = 0;
+                if (isAttacking) {
+                    armAngle = -Math.PI / 2 + (this.playerAnim.frame / 20) * Math.PI;
+                } else if (isDefending) {
+                    armAngle = -Math.PI / 3;
+                } else {
+                    armAngle = Math.sin(this.time * 0.05) * 0.15;
+                }
+
+                // Back arm
+                ctx.beginPath();
+                ctx.moveTo(x, y - 28 + breathe);
+                ctx.lineTo(x - 22, y - 5);
+                ctx.stroke();
+
+                // Weapon arm
+                ctx.beginPath();
+                ctx.moveTo(x, y - 28 + breathe);
+                const handX = x + 28 * Math.cos(armAngle);
+                const handY = y - 28 + 28 * Math.sin(armAngle) + breathe;
+                ctx.lineTo(handX, handY);
+                ctx.stroke();
+
+                // Draw weapon with trail
+                ctx.strokeStyle = weapon.color;
+                ctx.lineWidth = 6;
+
+                if (weapon.glow) {
+                    ctx.shadowColor = weapon.glow;
+                    ctx.shadowBlur = 15;
+                }
+
+                const weaponLength = 50;
+                const weaponAngle = armAngle + (isAttacking ? Math.PI / 4 : Math.PI / 5);
+                const tipX = handX + weaponLength * Math.cos(weaponAngle);
+                const tipY = handY + weaponLength * Math.sin(weaponAngle);
+
+                // Weapon trail when attacking
+                if (isAttacking && this.playerAnim.frame > 5 && this.playerAnim.frame < 20) {
+                    ctx.globalAlpha = 0.5;
+                    for (let i = 1; i <= 3; i++) {
+                        const trailAngle = armAngle - i * 0.15 + (isAttacking ? Math.PI / 4 : Math.PI / 5);
+                        const tx = handX + weaponLength * Math.cos(trailAngle);
+                        const ty = handY + weaponLength * Math.sin(trailAngle);
+                        ctx.globalAlpha = 0.3 - i * 0.08;
+                        ctx.beginPath();
+                        ctx.moveTo(handX, handY);
+                        ctx.lineTo(tx, ty);
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1;
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(handX, handY);
+                ctx.lineTo(tipX, tipY);
+                ctx.stroke();
+
+                // Weapon hilt
+                ctx.strokeStyle = '#5D4037';
+                ctx.lineWidth = 8;
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.moveTo(handX, handY);
+                ctx.lineTo(handX + 8 * Math.cos(weaponAngle + Math.PI/2), handY + 8 * Math.sin(weaponAngle + Math.PI/2));
+                ctx.stroke();
+
+                // Special weapon effects
+                if (weapon.name === 'fire') {
+                    for (let i = 0; i < 5; i++) {
+                        const t = i / 5;
+                        const fx = handX + (tipX - handX) * t + (Math.random() - 0.5) * 10;
+                        const fy = handY + (tipY - handY) * t + (Math.random() - 0.5) * 10 - 5;
+                        const size = 4 + Math.random() * 6;
+                        ctx.fillStyle = Math.random() > 0.3 ? '#FF6600' : '#FFCC00';
+                        ctx.shadowColor = '#FF3300';
+                        ctx.shadowBlur = 10;
+                        ctx.beginPath();
+                        ctx.arc(fx, fy, size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                } else if (weapon.name === 'legend') {
+                    // Sparkle trail
+                    for (let i = 0; i < 3; i++) {
+                        const t = 0.3 + i * 0.25;
+                        const sx = handX + (tipX - handX) * t;
+                        const sy = handY + (tipY - handY) * t;
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.shadowColor = '#FFD700';
+                        ctx.shadowBlur = 15;
+                        const sparkleSize = 4 + Math.sin(this.time * 0.3 + i) * 2;
+                        ctx.beginPath();
+                        ctx.arc(sx, sy, sparkleSize, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                } else if (weapon.name === 'silver') {
+                    // Holy glow
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.shadowColor = '#FFFFFF';
+                    ctx.shadowBlur = 20;
+                    ctx.beginPath();
+                    ctx.arc(tipX, tipY, 8 + Math.sin(this.time * 0.2) * 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Defense shield effect
+                if (isDefending) {
+                    ctx.strokeStyle = 'rgba(79, 195, 247, 0.5)';
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = '#4fc3f7';
+                    ctx.shadowBlur = 20;
+                    const shieldPulse = Math.sin(this.time * 0.2) * 5;
+                    ctx.beginPath();
+                    ctx.arc(x + 15, y - 20, 40 + shieldPulse, -0.8, 0.8);
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+            },
+
+            drawEnemyStickman(x, y) {
+                const ctx = this.ctx;
+                const enemyId = Battle.enemy?.id || 'e1';
+                const enemyStyle = this.enemyTypes[enemyId] || this.enemyTypes['e1'];
+                const isAttacking = this.enemyAnim.type === 'attack';
+                const isHit = this.enemyAnim.type === 'hit';
+                const isDeath = this.enemyAnim.type === 'death';
+                const size = enemyStyle.size || 1;
+
+                ctx.save();
+
+                // Hit flash
+                if (isHit && this.enemyAnim.frame % 4 < 2) {
+                    ctx.globalAlpha = 0.5;
+                }
+
+                // Death effect
+                if (isDeath) {
+                    ctx.globalAlpha = 1 - this.enemyAnim.frame / 40;
+                    y += this.enemyAnim.frame * 1.5;
+                    // Red tint
+                    ctx.filter = `hue-rotate(${this.enemyAnim.frame * 5}deg)`;
+                }
+
+                ctx.strokeStyle = enemyStyle.color;
+                ctx.fillStyle = enemyStyle.color;
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+
+                // Breathing
+                const breathe = !isAttacking && !isDeath ? Math.sin(this.time * 0.07) * 2 : 0;
+
+                // Different enemy shapes
+                if (enemyStyle.type === 'dragon') {
+                    this.drawDragon(x, y, isAttacking, size);
+                } else if (enemyStyle.type === 'skeleton') {
+                    this.drawSkeleton(x, y, isAttacking, breathe);
+                } else if (enemyStyle.type === 'mage') {
+                    this.drawMage(x, y, isAttacking, breathe);
+                } else if (enemyStyle.type === 'rat') {
+                    this.drawRat(x, y, isAttacking);
+                } else {
+                    // Enhanced humanoid stickman
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.scale(size, size);
+
+                    // Glow for larger enemies
+                    if (size > 1.2) {
+                        ctx.shadowColor = enemyStyle.color;
+                        ctx.shadowBlur = 10;
+                    }
+
+                    // Head
+                    ctx.beginPath();
+                    ctx.arc(0, -60 / size + breathe, 22, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.fill();
+
+                    // Angry eyes
+                    ctx.fillStyle = '#FF0000';
+                    ctx.beginPath();
+                    ctx.arc(-8, -63 / size + breathe, 5, 0, Math.PI * 2);
+                    ctx.arc(8, -63 / size + breathe, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(-7, -62 / size + breathe, 2, 0, Math.PI * 2);
+                    ctx.arc(9, -62 / size + breathe, 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Horns for minotaur/orc
+                    if (enemyStyle.type === 'minotaur' || enemyStyle.type === 'orc') {
+                        ctx.strokeStyle = '#5D4037';
+                        ctx.lineWidth = 6;
+                        ctx.beginPath();
+                        ctx.moveTo(-15, -75 / size);
+                        ctx.lineTo(-25, -95 / size);
+                        ctx.moveTo(15, -75 / size);
+                        ctx.lineTo(25, -95 / size);
+                        ctx.stroke();
+                    }
+
+                    // Body
+                    ctx.strokeStyle = enemyStyle.color;
+                    ctx.lineWidth = 6 * (size > 1.2 ? 1.5 : 1);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -38 / size + breathe);
+                    ctx.lineTo(0, 15 / size);
+                    ctx.stroke();
+
+                    // Legs
+                    ctx.lineWidth = 5;
+                    const legAnim = isAttacking ? Math.sin(this.enemyAnim.frame * 0.4) * 0.3 : 0;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 15 / size);
+                    ctx.lineTo(-22 - legAnim * 15, 55 / size);
+                    ctx.moveTo(0, 15 / size);
+                    ctx.lineTo(22 + legAnim * 15, 55 / size);
+                    ctx.stroke();
+
+                    // Arms with weapon
+                    let armAngle = isAttacking ? Math.PI / 2 - (this.enemyAnim.frame / 25) * Math.PI : Math.PI / 5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, -23 / size);
+                    ctx.lineTo(22, -3 / size);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, -23 / size);
+                    const handX = -28 * Math.cos(armAngle);
+                    const handY = -23 / size + 28 * Math.sin(armAngle);
+                    ctx.lineTo(handX, handY);
+                    ctx.stroke();
+
+                    // Weapon
+                    ctx.strokeStyle = '#666666';
+                    ctx.lineWidth = 8;
+                    const weaponAngle = armAngle - Math.PI / 5;
+                    const wepLen = 45;
+                    ctx.beginPath();
+                    ctx.moveTo(handX, handY);
+                    ctx.lineTo(handX - wepLen * Math.cos(weaponAngle), handY + wepLen * Math.sin(weaponAngle));
+                    ctx.stroke();
+
+                    // Axe head for big enemies
+                    if (size > 1.2) {
+                        ctx.fillStyle = '#888888';
+                        const axeX = handX - wepLen * Math.cos(weaponAngle);
+                        const axeY = handY + wepLen * Math.sin(weaponAngle);
+                        ctx.beginPath();
+                        ctx.arc(axeX, axeY, 15, weaponAngle - 0.5, weaponAngle + 0.5);
+                        ctx.lineTo(axeX - 10 * Math.cos(weaponAngle), axeY + 10 * Math.sin(weaponAngle));
+                        ctx.fill();
+                    }
+
+                    ctx.restore();
+                }
+
+                ctx.restore();
+            },
+
+            drawDragon(x, y, isAttacking, size) {
+                const ctx = this.ctx;
+                ctx.save();
+
+                const scale = size * 0.9;
+                ctx.translate(x, y - 20);
+                ctx.scale(scale, scale);
+
+                // Dragon glow
+                ctx.shadowColor = '#FF3300';
+                ctx.shadowBlur = 15;
+
+                // Body
+                ctx.fillStyle = '#C62828';
+                ctx.strokeStyle = '#B71C1C';
+                ctx.lineWidth = 3;
+
+                // Main body
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 55, 35, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Scales pattern
+                ctx.strokeStyle = '#8B0000';
+                for (let i = -40; i < 40; i += 15) {
+                    ctx.beginPath();
+                    ctx.arc(i, -5, 8, 0, Math.PI);
+                    ctx.stroke();
+                }
+
+                // Neck
+                ctx.fillStyle = '#C62828';
+                ctx.beginPath();
+                ctx.moveTo(-40, -20);
+                ctx.quadraticCurveTo(-60, -40, -55, -60);
+                ctx.quadraticCurveTo(-50, -70, -40, -65);
+                ctx.quadraticCurveTo(-35, -45, -30, -25);
+                ctx.fill();
+
+                // Head
+                ctx.beginPath();
+                ctx.ellipse(-55, -70, 28, 20, -0.4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Snout
+                ctx.beginPath();
+                ctx.moveTo(-70, -75);
+                ctx.lineTo(-95, -70);
+                ctx.lineTo(-70, -60);
+                ctx.closePath();
+                ctx.fill();
+
+                // Eye
+                ctx.fillStyle = '#FFEB3B';
+                ctx.shadowColor = '#FFEB3B';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.ellipse(-65, -78, 7, 5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.ellipse(-66, -77, 3, 4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Wings
+                ctx.fillStyle = '#D32F2F';
+                ctx.strokeStyle = '#8B0000';
+                ctx.lineWidth = 2;
+                const wingFlap = Math.sin(this.time * 0.15) * 15;
+                ctx.beginPath();
+                ctx.moveTo(0, -30);
+                ctx.lineTo(50, -100 + wingFlap);
+                ctx.lineTo(70, -70 + wingFlap);
+                ctx.lineTo(55, -50 + wingFlap / 2);
+                ctx.lineTo(30, -40);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Wing bones
+                ctx.strokeStyle = '#B71C1C';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, -30);
+                ctx.lineTo(50, -100 + wingFlap);
+                ctx.moveTo(15, -50);
+                ctx.lineTo(55, -70 + wingFlap);
+                ctx.stroke();
+
+                // Tail
+                ctx.strokeStyle = '#C62828';
+                ctx.lineWidth = 12;
+                ctx.beginPath();
+                ctx.moveTo(50, 0);
+                ctx.quadraticCurveTo(80, 20, 100, 10 + Math.sin(this.time * 0.1) * 10);
+                ctx.stroke();
+
+                // Tail spike
+                ctx.fillStyle = '#8B0000';
+                ctx.beginPath();
+                ctx.moveTo(95, 5 + Math.sin(this.time * 0.1) * 10);
+                ctx.lineTo(120, 10 + Math.sin(this.time * 0.1) * 10);
+                ctx.lineTo(95, 15 + Math.sin(this.time * 0.1) * 10);
+                ctx.closePath();
+                ctx.fill();
+
+                // Fire breath
+                if (isAttacking) {
+                    ctx.shadowColor = '#FF6600';
+                    ctx.shadowBlur = 20;
+                    for (let i = 0; i < 12; i++) {
+                        const fx = -95 - i * 15 - Math.random() * 15;
+                        const fy = -65 + (Math.random() - 0.5) * (20 + i * 3);
+                        const fsize = 10 + Math.random() * 12 - i * 0.5;
+                        ctx.fillStyle = i < 4 ? '#FFFFFF' : (Math.random() > 0.3 ? '#FF6600' : '#FFCC00');
+                        ctx.beginPath();
+                        ctx.arc(fx, fy, fsize, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                // Legs/claws
+                ctx.strokeStyle = '#8B0000';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(-20, 30);
+                ctx.lineTo(-25, 55);
+                ctx.moveTo(20, 30);
+                ctx.lineTo(25, 55);
+                ctx.stroke();
+
+                ctx.restore();
+            },
+
+            drawSkeleton(x, y, isAttacking, breathe) {
+                const ctx = this.ctx;
+
+                ctx.strokeStyle = '#ECEFF1';
+                ctx.fillStyle = '#ECEFF1';
+                ctx.lineWidth = 3;
+
+                // Eerie glow
+                ctx.shadowColor = '#88FFFF';
+                ctx.shadowBlur = 5;
+
+                // Skull
+                ctx.beginPath();
+                ctx.arc(x, y - 60 + breathe, 20, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Skull detail
+                ctx.strokeStyle = '#B0BEC5';
+                ctx.beginPath();
+                ctx.arc(x, y - 55 + breathe, 14, 0.5, 2.6);
+                ctx.stroke();
+
+                // Eye sockets with glow
+                ctx.fillStyle = '#00FFFF';
+                ctx.shadowColor = '#00FFFF';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(x - 7, y - 63 + breathe, 5, 0, Math.PI * 2);
+                ctx.arc(x + 7, y - 63 + breathe, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Nose hole
+                ctx.fillStyle = '#37474F';
+                ctx.beginPath();
+                ctx.moveTo(x, y - 55 + breathe);
+                ctx.lineTo(x - 3, y - 50 + breathe);
+                ctx.lineTo(x + 3, y - 50 + breathe);
+                ctx.closePath();
+                ctx.fill();
+
+                // Jaw with teeth
+                ctx.strokeStyle = '#ECEFF1';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x - 12, y - 48 + breathe);
+                ctx.lineTo(x - 10, y - 42 + breathe);
+                ctx.lineTo(x + 10, y - 42 + breathe);
+                ctx.lineTo(x + 12, y - 48 + breathe);
+                ctx.stroke();
+
+                // Teeth
+                for (let i = -8; i <= 8; i += 4) {
+                    ctx.beginPath();
+                    ctx.moveTo(x + i, y - 48 + breathe);
+                    ctx.lineTo(x + i, y - 44 + breathe);
+                    ctx.stroke();
+                }
+
+                // Spine
+                ctx.strokeStyle = '#ECEFF1';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(x, y - 40 + breathe);
+                ctx.lineTo(x, y + 15);
+                ctx.stroke();
+
+                // Spine segments
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 6; i++) {
+                    const sy = y - 35 + i * 8;
+                    ctx.beginPath();
+                    ctx.moveTo(x - 4, sy);
+                    ctx.lineTo(x + 4, sy);
+                    ctx.stroke();
+                }
+
+                // Ribs
+                ctx.lineWidth = 3;
+                for (let i = 0; i < 4; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(x - 18, y - 25 + i * 10);
+                    ctx.quadraticCurveTo(x, y - 20 + i * 10, x + 18, y - 25 + i * 10);
+                    ctx.stroke();
+                }
+
+                // Pelvis
+                ctx.beginPath();
+                ctx.ellipse(x, y + 15, 15, 8, 0, 0, Math.PI);
+                ctx.stroke();
+
+                // Legs
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(x - 10, y + 20);
+                ctx.lineTo(x - 15, y + 55);
+                ctx.moveTo(x + 10, y + 20);
+                ctx.lineTo(x + 15, y + 55);
+                ctx.stroke();
+
+                // Arms with sword
+                const armAngle = isAttacking ? -Math.PI/3 + Math.sin(this.enemyAnim.frame * 0.3) * 0.2 : Math.PI/6;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(x, y - 28);
+                ctx.lineTo(x - 25, y - 5);
+                ctx.moveTo(x, y - 28);
+                ctx.lineTo(x - 22 * Math.cos(armAngle), y - 28 + 22 * Math.sin(armAngle));
+                ctx.stroke();
+
+                // Rusty sword
+                ctx.strokeStyle = '#78909C';
+                ctx.lineWidth = 4;
+                const handX = x - 22 * Math.cos(armAngle);
+                const handY = y - 28 + 22 * Math.sin(armAngle);
+                ctx.beginPath();
+                ctx.moveTo(handX, handY);
+                ctx.lineTo(handX - 45, handY + 35);
+                ctx.stroke();
+
+                // Sword rust spots
+                ctx.fillStyle = '#5D4037';
+                for (let i = 0; i < 3; i++) {
+                    const t = 0.3 + i * 0.2;
+                    ctx.beginPath();
+                    ctx.arc(handX - 45 * t, handY + 35 * t, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            },
+
+            drawMage(x, y, isAttacking, breathe) {
+                const ctx = this.ctx;
+
+                // Magic aura
+                ctx.fillStyle = 'rgba(156, 39, 176, 0.2)';
+                ctx.shadowColor = '#E040FB';
+                ctx.shadowBlur = 20;
+                ctx.beginPath();
+                ctx.arc(x, y - 20, 55 + Math.sin(this.time * 0.1) * 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Robe
+                ctx.fillStyle = '#4A148C';
+                ctx.beginPath();
+                ctx.moveTo(x - 30, y + 58);
+                ctx.lineTo(x - 18, y - 35 + breathe);
+                ctx.lineTo(x + 18, y - 35 + breathe);
+                ctx.lineTo(x + 30, y + 58);
+                ctx.closePath();
+                ctx.fill();
+
+                // Robe detail
+                ctx.strokeStyle = '#7B1FA2';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, y - 30 + breathe);
+                ctx.lineTo(x, y + 55);
+                ctx.stroke();
+
+                // Hood
+                ctx.fillStyle = '#6A1B9A';
+                ctx.beginPath();
+                ctx.arc(x, y - 55 + breathe, 25, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Hood shadow
+                ctx.fillStyle = '#4A148C';
+                ctx.beginPath();
+                ctx.arc(x, y - 52 + breathe, 18, 0, Math.PI);
+                ctx.fill();
+
+                // Glowing eyes
+                ctx.fillStyle = '#E040FB';
+                ctx.shadowColor = '#E040FB';
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                ctx.arc(x - 7, y - 58 + breathe, 5, 0, Math.PI * 2);
+                ctx.arc(x + 7, y - 58 + breathe, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Staff
+                ctx.strokeStyle = '#4E342E';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(x - 35, y + 55);
+                ctx.lineTo(x - 25, y - 75 + breathe);
+                ctx.stroke();
+
+                // Staff crystal
+                ctx.fillStyle = '#E040FB';
+                ctx.shadowColor = '#E040FB';
+                ctx.shadowBlur = 25 + Math.sin(this.time * 0.15) * 10;
+                ctx.beginPath();
+                ctx.moveTo(x - 25, y - 90 + breathe);
+                ctx.lineTo(x - 35, y - 75 + breathe);
+                ctx.lineTo(x - 25, y - 70 + breathe);
+                ctx.lineTo(x - 15, y - 75 + breathe);
+                ctx.closePath();
+                ctx.fill();
+
+                // Crystal inner glow
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(x - 25, y - 78 + breathe, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Magic attack
+                if (isAttacking) {
+                    // Magic circle
+                    ctx.strokeStyle = '#E040FB';
+                    ctx.lineWidth = 2;
+                    ctx.shadowColor = '#E040FB';
+                    ctx.shadowBlur = 15;
+                    const circleX = x - 80 - this.enemyAnim.frame * 5;
+                    ctx.beginPath();
+                    ctx.arc(circleX, y - 40, 20, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    // Runes
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i / 6) * Math.PI * 2 + this.time * 0.1;
+                        const rx = circleX + Math.cos(angle) * 15;
+                        const ry = y - 40 + Math.sin(angle) * 15;
+                        ctx.fillStyle = '#E040FB';
+                        ctx.beginPath();
+                        ctx.arc(rx, ry, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    // Energy bolts
+                    for (let i = 0; i < 5; i++) {
+                        const bx = x - 50 - i * 25 - Math.random() * 10;
+                        const by = y - 40 + Math.sin(this.time * 0.2 + i) * 25;
+                        ctx.fillStyle = `rgba(224, 64, 251, ${0.9 - i * 0.15})`;
+                        ctx.beginPath();
+                        ctx.arc(bx, by, 12 - i, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                // Floating particles
+                for (let i = 0; i < 3; i++) {
+                    const angle = (i / 3) * Math.PI * 2 + this.time * 0.03;
+                    const dist = 35 + Math.sin(this.time * 0.05 + i) * 5;
+                    const px = x + Math.cos(angle) * dist;
+                    const py = y - 20 + Math.sin(angle) * dist * 0.5;
+                    ctx.fillStyle = 'rgba(224, 64, 251, 0.6)';
+                    ctx.shadowColor = '#E040FB';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.shadowBlur = 0;
+            },
+
+            drawRat(x, y, isAttacking) {
+                const ctx = this.ctx;
+
+                ctx.fillStyle = '#5D4037';
+                ctx.strokeStyle = '#3E2723';
+                ctx.lineWidth = 2;
+
+                // Body
+                ctx.beginPath();
+                ctx.ellipse(x, y + 20, 30, 18, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Head
+                ctx.beginPath();
+                ctx.ellipse(x - 25, y + 10, 18, 14, -0.3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Snout
+                ctx.beginPath();
+                ctx.ellipse(x - 45, y + 8, 10, 7, -0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Nose
+                ctx.fillStyle = '#FF8A80';
+                ctx.beginPath();
+                ctx.arc(x - 55, y + 6, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Eyes
+                ctx.fillStyle = '#FF0000';
+                ctx.shadowColor = '#FF0000';
+                ctx.shadowBlur = 5;
+                ctx.beginPath();
+                ctx.arc(x - 35, y + 3, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Ears
+                ctx.fillStyle = '#8D6E63';
+                ctx.beginPath();
+                ctx.ellipse(x - 20, y - 5, 8, 12, -0.5, 0, Math.PI * 2);
+                ctx.ellipse(x - 30, y - 3, 8, 12, -0.8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Whiskers
+                ctx.strokeStyle = '#BCAAA4';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(x - 50, y + 5 + i * 4);
+                    ctx.lineTo(x - 70, y + 2 + i * 5);
+                    ctx.stroke();
+                }
+
+                // Tail
+                ctx.strokeStyle = '#8D6E63';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(x + 28, y + 25);
+                ctx.quadraticCurveTo(x + 60, y + 40, x + 70, y + 20 + Math.sin(this.time * 0.2) * 10);
+                ctx.stroke();
+
+                // Legs
+                ctx.strokeStyle = '#5D4037';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(x - 15, y + 35);
+                ctx.lineTo(x - 20, y + 55);
+                ctx.moveTo(x + 10, y + 35);
+                ctx.lineTo(x + 15, y + 55);
+                ctx.stroke();
+
+                // Attack - lunge forward
+                if (isAttacking) {
+                    // Teeth
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.moveTo(x - 48, y + 12);
+                    ctx.lineTo(x - 52, y + 20);
+                    ctx.lineTo(x - 44, y + 12);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(x - 42, y + 12);
+                    ctx.lineTo(x - 46, y + 18);
+                    ctx.lineTo(x - 38, y + 12);
+                    ctx.fill();
+                }
+            },
+
+            // Animation triggers with effects
+            playPlayerAttack() {
+                this.playerAnim = { type: 'attack', frame: 0, duration: 30 };
+                this.combo++;
+                this.comboTimer = 120;
+            },
+
+            playPlayerSkill() {
+                this.playerAnim = { type: 'skill', frame: 0, duration: 40 };
+                this.combo += 2;
+                this.comboTimer = 120;
+            },
+
+            playPlayerDefend() {
+                this.playerAnim = { type: 'defend', frame: 0, duration: 30 };
+            },
+
+            playPlayerHit() {
+                this.playerAnim = { type: 'hit', frame: 0, duration: 20 };
+                this.combo = 0;
+            },
+
+            playPlayerHeal() {
+                this.playerAnim = { type: 'heal', frame: 0, duration: 40 };
+            },
+
+            playEnemyAttack() {
+                this.enemyAnim = { type: 'attack', frame: 0, duration: 30 };
+            },
+
+            playEnemyHit() {
+                this.enemyAnim = { type: 'hit', frame: 0, duration: 20 };
+            },
+
+            playEnemyDeath() {
+                this.enemyAnim = { type: 'death', frame: 0, duration: 40 };
+                this.spawnSparks(this.enemy.baseX, 120, 30, '#FF0000');
+                this.triggerShake(20);
+            },
+
+            showDamage(x, y, text, color, size = 24) {
+                this.popups.push({
+                    x: x + (Math.random() - 0.5) * 30,
+                    y: y,
+                    text: text,
+                    color: color,
+                    alpha: 1,
+                    size: size,
+                    scale: 0.5
+                });
+            }
+        };
+
+        // ===================== UTILITY FUNCTIONS =====================
+        function notify(message, type = 'info') {
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        function saveGame() {
+            localStorage.setItem('questRpgSave', JSON.stringify({
+                player: Player,
+                quests: GameData.quests
+            }));
+        }
+
+        function loadGame() {
+            const save = localStorage.getItem('questRpgSave');
+            if (save) {
+                const data = JSON.parse(save);
+                Player = data.player;
+                GameData.quests = data.quests;
+                updateOwnedItems();
+            }
+        }
+
+        function updateOwnedItems() {
+            GameData.weapons.forEach(w => w.owned = Player.ownedItems.includes(w.id));
+            GameData.armor.forEach(a => a.owned = Player.ownedItems.includes(a.id));
+        }
+
+        // ===================== UI UPDATES =====================
+        function updateHeader() {
+            document.getElementById('player-name').textContent = Player.name;
+            document.getElementById('header-level').textContent = Player.level;
+            document.getElementById('header-gold').textContent = Player.gold;
+
+            const hpPercent = (Player.hp / Player.maxHp) * 100;
+            document.getElementById('header-hp-fill').style.width = hpPercent + '%';
+            document.getElementById('header-hp-text').textContent = `${Player.hp}/${Player.maxHp}`;
+
+            const mpPercent = (Player.mp / Player.maxMp) * 100;
+            document.getElementById('header-mp-fill').style.width = mpPercent + '%';
+            document.getElementById('header-mp-text').textContent = `${Player.mp}/${Player.maxMp}`;
+
+            const xpPercent = (Player.xp / Player.xpToNext) * 100;
+            document.getElementById('xp-fill').style.width = xpPercent + '%';
+            document.getElementById('xp-text').textContent = `${Player.xp} / ${Player.xpToNext} XP`;
+        }
+
+        function getPlayerAttack() {
+            const weapon = GameData.weapons.find(w => w.id === Player.equipment.weapon);
+            return Player.stats.strength * 2 + (weapon ? weapon.attack : 0);
+        }
+
+        function getPlayerDefense() {
+            const armor = GameData.armor.find(a => a.id === Player.equipment.armor);
+            return Player.stats.agility + (armor ? armor.defense : 0);
+        }
+
+        function getCritChance() {
+            return Math.min(50, 5 + Player.stats.agility);
+        }
+
+        // ===================== NAVIGATION =====================
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (Battle.active) {
+                    notify('Сначала закончи бой!', 'error');
+                    return;
+                }
+
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const screenId = btn.dataset.screen + '-screen';
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+
+                if (btn.dataset.screen === 'shop') renderShop('weapons');
+                if (btn.dataset.screen === 'character') renderCharacter();
+                if (btn.dataset.screen === 'arena') renderArena();
+                if (btn.dataset.screen === 'castle') renderQuests();
+            });
+        });
+
+        // ===================== CASTLE / QUESTS =====================
+        function renderQuests() {
+            const container = document.getElementById('quest-list');
+            container.innerHTML = '';
+
+            GameData.quests.forEach(quest => {
+                const div = document.createElement('div');
+                div.className = 'quest-item' + (quest.completed ? ' completed' : '');
+
+                const enemyName = GameData.enemies.find(e => e.id === quest.target.enemy)?.name || 'врага';
+                const progressText = quest.completed ? 'Выполнено!' : `${quest.progress}/${quest.target.count}`;
+
+                div.innerHTML = `
+                    <div class="quest-title">${quest.title} ${quest.completed ? '✅' : ''}</div>
+                    <div class="quest-desc">${quest.desc} (${progressText})</div>
+                    <div class="quest-reward">Награда: ${quest.reward.gold} золота, ${quest.reward.xp} опыта</div>
+                `;
+
+                if (!quest.completed && quest.progress >= quest.target.count) {
+                    const claimBtn = document.createElement('button');
+                    claimBtn.className = 'buy-btn';
+                    claimBtn.textContent = 'Забрать награду';
+                    claimBtn.onclick = () => claimQuest(quest);
+                    div.appendChild(claimBtn);
+                }
+
+                container.appendChild(div);
+            });
+        }
+
+        function claimQuest(quest) {
+            quest.completed = true;
+            Player.gold += quest.reward.gold;
+            gainXP(quest.reward.xp);
+            notify(`Квест выполнен! +${quest.reward.gold} золота, +${quest.reward.xp} XP`, 'success');
+            updateHeader();
+            renderQuests();
+            saveGame();
+        }
+
+        function updateQuestProgress(enemyId) {
+            GameData.quests.forEach(quest => {
+                if (!quest.completed && quest.target.enemy === enemyId) {
+                    quest.progress++;
+                }
+            });
+        }
+
+        // ===================== ARENA =====================
+        function renderArena() {
+            const container = document.getElementById('enemy-list');
+            container.innerHTML = '';
+
+            GameData.enemies.forEach(enemy => {
+                const div = document.createElement('div');
+                div.className = 'enemy-card';
+                div.innerHTML = `
+                    <div class="enemy-sprite">${enemy.icon}</div>
+                    <div class="enemy-name">${enemy.name}</div>
+                    <div class="enemy-level">Уровень ${enemy.level}</div>
+                    <div class="enemy-reward">💰 ${enemy.gold} | ⭐ ${enemy.xp} XP</div>
+                `;
+                div.onclick = () => startBattle(enemy);
+                container.appendChild(div);
+            });
+        }
+
+        // ===================== BATTLE SYSTEM =====================
+        function startBattle(enemy) {
+            Battle.active = true;
+            Battle.enemy = {...enemy};
+            Battle.enemyHp = enemy.hp;
+            Battle.enemyMaxHp = enemy.hp;
+            Battle.playerDefending = false;
+            Battle.turn = 'player';
+            Battle.questEnemy = enemy.id;
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('battle-screen').classList.add('active');
+
+            document.getElementById('battle-player-name').textContent = Player.name;
+            document.getElementById('battle-enemy-name').textContent = enemy.name;
+
+            // Start animation system
+            BattleAnim.init();
+            BattleAnim.start();
+
+            updateBattleUI();
+            clearBattleLog();
+            addBattleLog(`Бой начался! ${enemy.name} атакует!`, 'system');
+
+            document.querySelectorAll('.battle-btn').forEach(b => b.disabled = false);
+        }
+
+        function updateBattleUI() {
+            const playerHpPercent = (Player.hp / Player.maxHp) * 100;
+            document.getElementById('battle-player-hp').style.width = playerHpPercent + '%';
+            document.getElementById('battle-player-hp-text').textContent = `${Player.hp}/${Player.maxHp}`;
+
+            const enemyHpPercent = (Battle.enemyHp / Battle.enemyMaxHp) * 100;
+            document.getElementById('battle-enemy-hp').style.width = enemyHpPercent + '%';
+            document.getElementById('battle-enemy-hp-text').textContent = `${Battle.enemyHp}/${Battle.enemyMaxHp}`;
+
+            updateHeader();
+        }
+
+        function addBattleLog(message, type = '') {
+            const log = document.getElementById('battle-log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + type;
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function clearBattleLog() {
+            document.getElementById('battle-log').innerHTML = '';
+        }
+
+        // Battle actions
+        document.querySelectorAll('.battle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (Battle.turn !== 'player') return;
+
+                const action = btn.dataset.action;
+                performPlayerAction(action);
+            });
+        });
+
+        function performPlayerAction(action) {
+            document.querySelectorAll('.battle-btn').forEach(b => b.disabled = true);
+            Battle.playerDefending = false;
+
+            switch(action) {
+                case 'attack':
+                    playerAttack();
+                    break;
+                case 'skill':
+                    playerSkill();
+                    break;
+                case 'defend':
+                    playerDefend();
+                    break;
+                case 'potion':
+                    usePotion();
+                    break;
+            }
+
+            if (Battle.enemyHp <= 0) {
+                endBattle(true);
+                return;
+            }
+
+            Battle.turn = 'enemy';
+            setTimeout(enemyTurn, 1000);
+        }
+
+        function playerAttack() {
+            let damage = getPlayerAttack();
+            const crit = Math.random() * 100 < getCritChance();
+            if (crit) damage = Math.floor(damage * 1.5);
+
+            damage = Math.max(1, damage - Battle.enemy.defense);
+            Battle.enemyHp = Math.max(0, Battle.enemyHp - damage);
+
+            // Play animations
+            BattleAnim.playPlayerAttack();
+            setTimeout(() => {
+                BattleAnim.playEnemyHit();
+                BattleAnim.showDamage(BattleAnim.enemy.baseX, 100, `-${damage}`, crit ? '#FFD700' : '#FF6B6B', crit ? 32 : 24);
+            }, 400);
+
+            addBattleLog(`Ты атакуешь и наносишь ${damage} урона!${crit ? ' КРИТ!' : ''}`, 'player-action');
+            updateBattleUI();
+        }
+
+        function playerSkill() {
+            if (Player.mp < 20) {
+                addBattleLog('Недостаточно маны!', 'system');
+                document.querySelectorAll('.battle-btn').forEach(b => b.disabled = false);
+                return;
+            }
+
+            Player.mp -= 20;
+            let damage = getPlayerAttack() + Player.stats.intelligence * 3;
+            damage = Math.max(1, damage - Battle.enemy.defense / 2);
+            Battle.enemyHp = Math.max(0, Battle.enemyHp - damage);
+
+            // Play skill animation
+            BattleAnim.playPlayerSkill();
+            setTimeout(() => {
+                BattleAnim.playEnemyHit();
+                BattleAnim.showDamage(BattleAnim.enemy.baseX, 80, `-${damage}`, '#E040FB', 30);
+            }, 500);
+
+            addBattleLog(`Мощный удар! ${damage} урона! (-20 MP)`, 'player-action');
+            updateBattleUI();
+        }
+
+        function playerDefend() {
+            Battle.playerDefending = true;
+            const healAmount = Math.floor(Player.maxHp * 0.1);
+            Player.hp = Math.min(Player.maxHp, Player.hp + healAmount);
+
+            // Play defend animation
+            BattleAnim.playPlayerDefend();
+            BattleAnim.showDamage(BattleAnim.player.baseX, 100, `+${healAmount}`, '#27ae60', 22);
+
+            addBattleLog(`Ты защищаешься и восстанавливаешь ${healAmount} HP!`, 'player-action');
+            updateBattleUI();
+        }
+
+        function usePotion() {
+            if (Player.potions <= 0) {
+                addBattleLog('Нет зелий!', 'system');
+                document.querySelectorAll('.battle-btn').forEach(b => b.disabled = false);
+                return;
+            }
+
+            Player.potions--;
+            const healAmount = 50;
+            Player.hp = Math.min(Player.maxHp, Player.hp + healAmount);
+
+            // Play heal animation
+            BattleAnim.playPlayerHeal();
+            BattleAnim.showDamage(BattleAnim.player.baseX, 100, `+${healAmount}`, '#27ae60', 26);
+
+            addBattleLog(`Используешь зелье! +${healAmount} HP (осталось: ${Player.potions})`, 'player-action');
+            updateBattleUI();
+        }
+
+        function enemyTurn() {
+            let damage = Battle.enemy.attack;
+            if (Battle.playerDefending) damage = Math.floor(damage * 0.5);
+            damage = Math.max(1, damage - getPlayerDefense());
+
+            // Play enemy attack animation
+            BattleAnim.playEnemyAttack();
+            setTimeout(() => {
+                BattleAnim.playPlayerHit();
+                BattleAnim.showDamage(BattleAnim.player.baseX, 100, `-${damage}`, '#e74c3c', 24);
+            }, 400);
+
+            Player.hp = Math.max(0, Player.hp - damage);
+            addBattleLog(`${Battle.enemy.name} атакует и наносит ${damage} урона!`, 'enemy-action');
+            updateBattleUI();
+
+            if (Player.hp <= 0) {
+                setTimeout(() => endBattle(false), 600);
+                return;
+            }
+
+            Battle.turn = 'player';
+            setTimeout(() => {
+                document.querySelectorAll('.battle-btn').forEach(b => b.disabled = false);
+            }, 600);
+        }
+
+        function endBattle(victory) {
+            Battle.active = false;
+
+            if (victory) {
+                // Play enemy death animation
+                BattleAnim.playEnemyDeath();
+                BattleAnim.showDamage(BattleAnim.enemy.baseX, 80, 'K.O.!', '#FFD700', 36);
+            }
+
+            // Wait for death animation then show result
+            setTimeout(() => {
+                BattleAnim.stop();
+
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('result-screen').classList.add('active');
+
+                const titleEl = document.getElementById('result-title');
+                const rewardsEl = document.getElementById('result-rewards');
+
+                if (victory) {
+                    titleEl.textContent = 'ПОБЕДА!';
+                    titleEl.className = 'result-title victory';
+
+                    Player.gold += Battle.enemy.gold;
+                    updateQuestProgress(Battle.questEnemy);
+
+                    rewardsEl.innerHTML = `
+                        💰 +${Battle.enemy.gold} золота<br>
+                        ⭐ +${Battle.enemy.xp} опыта
+                    `;
+
+                    gainXP(Battle.enemy.xp);
+                } else {
+                    titleEl.textContent = 'ПОРАЖЕНИЕ';
+                    titleEl.className = 'result-title defeat';
+                    rewardsEl.textContent = 'Ты был повержен...';
+                    Player.hp = Math.floor(Player.maxHp * 0.3);
+                }
+
+                updateHeader();
+                saveGame();
+            }, victory ? 800 : 400);
+        }
+
+        document.getElementById('continue-btn').addEventListener('click', () => {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('arena-screen').classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-screen="arena"]').classList.add('active');
+        });
+
+        function gainXP(amount) {
+            Player.xp += amount;
+            while (Player.xp >= Player.xpToNext) {
+                Player.xp -= Player.xpToNext;
+                Player.level++;
+                Player.xpToNext = Math.floor(Player.xpToNext * 1.5);
+                Player.statPoints += 3;
+                Player.maxHp += 10;
+                Player.maxMp += 5;
+                Player.hp = Player.maxHp;
+                Player.mp = Player.maxMp;
+                notify(`Уровень ${Player.level}! +3 очка характеристик!`, 'success');
+            }
+        }
+
+        // ===================== SHOP =====================
+        let currentShopTab = 'weapons';
+
+        document.querySelectorAll('.shop-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderShop(tab.dataset.tab);
+            });
+        });
+
+        function renderShop(tab) {
+            currentShopTab = tab;
+            const container = document.getElementById('shop-items');
+            container.innerHTML = '';
+
+            let items = [];
+            if (tab === 'weapons') items = GameData.weapons;
+            else if (tab === 'armor') items = GameData.armor;
+            else if (tab === 'potions') items = GameData.potions;
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                const owned = Player.ownedItems.includes(item.id);
+                const equipped = Player.equipment.weapon === item.id || Player.equipment.armor === item.id;
+
+                div.className = 'shop-item' + (owned ? ' owned' : '') + (equipped ? ' equipped' : '');
+
+                let statsText = '';
+                if (item.attack) statsText = `+${item.attack} Атака`;
+                if (item.defense) statsText = `+${item.defense} Защита`;
+                if (item.heal) statsText = `+${item.heal} HP`;
+                if (item.mana) statsText = `+${item.mana} MP`;
+
+                div.innerHTML = `
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-stats">${statsText}</div>
+                    <div class="item-price">${owned ? (equipped ? '✓ Надето' : 'В инвентаре') : `💰 ${item.price}`}</div>
+                `;
+
+                if (tab === 'potions') {
+                    const btn = document.createElement('button');
+                    btn.className = 'buy-btn';
+                    btn.textContent = 'Купить';
+                    btn.disabled = Player.gold < item.price;
+                    btn.onclick = () => buyPotion(item);
+                    div.appendChild(btn);
+                } else if (!owned) {
+                    const btn = document.createElement('button');
+                    btn.className = 'buy-btn';
+                    btn.textContent = 'Купить';
+                    btn.disabled = Player.gold < item.price;
+                    btn.onclick = () => buyItem(item, tab);
+                    div.appendChild(btn);
+                } else if (!equipped) {
+                    const btn = document.createElement('button');
+                    btn.className = 'equip-btn';
+                    btn.textContent = 'Надеть';
+                    btn.onclick = () => equipItem(item, tab);
+                    div.appendChild(btn);
+                }
+
+                container.appendChild(div);
+            });
+        }
+
+        function buyItem(item, type) {
+            if (Player.gold < item.price) {
+                notify('Недостаточно золота!', 'error');
+                return;
+            }
+
+            Player.gold -= item.price;
+            Player.ownedItems.push(item.id);
+            item.owned = true;
+
+            notify(`Куплено: ${item.name}!`, 'success');
+            updateHeader();
+            renderShop(type);
+            saveGame();
+        }
+
+        function equipItem(item, type) {
+            if (type === 'weapons') {
+                Player.equipment.weapon = item.id;
+            } else if (type === 'armor') {
+                Player.equipment.armor = item.id;
+            }
+
+            notify(`Надето: ${item.name}!`, 'success');
+            renderShop(type);
+            saveGame();
+        }
+
+        function buyPotion(item) {
+            if (Player.gold < item.price) {
+                notify('Недостаточно золота!', 'error');
+                return;
+            }
+
+            Player.gold -= item.price;
+            if (item.heal) Player.potions++;
+            if (item.mana) Player.manaPotions++;
+
+            notify(`Куплено: ${item.name}!`, 'success');
+            updateHeader();
+            renderShop('potions');
+            saveGame();
+        }
+
+        // ===================== CHARACTER =====================
+        function renderCharacter() {
+            document.getElementById('stat-points').textContent = Player.statPoints;
+
+            const statsContainer = document.getElementById('stats-list');
+            statsContainer.innerHTML = '';
+
+            const statNames = {
+                strength: { name: 'Сила', desc: '+2 атаки' },
+                vitality: { name: 'Живучесть', desc: '+10 HP' },
+                agility: { name: 'Ловкость', desc: '+1 защиты, +1% крит' },
+                intelligence: { name: 'Интеллект', desc: '+5 MP, +урон умений' }
+            };
+
+            Object.entries(Player.stats).forEach(([key, value]) => {
+                const row = document.createElement('div');
+                row.className = 'stat-row';
+                row.innerHTML = `
+                    <div>
+                        <div class="stat-name">${statNames[key].name}</div>
+                        <div style="font-size: 12px; color: #a89a7a;">${statNames[key].desc}</div>
+                    </div>
+                    <div class="stat-row-value">
+                        <div class="stat-number">${value}</div>
+                        <button class="stat-up-btn" data-stat="${key}" ${Player.statPoints <= 0 ? 'disabled' : ''}>+</button>
+                    </div>
+                `;
+                statsContainer.appendChild(row);
+            });
+
+            // Add stat button listeners
+            statsContainer.querySelectorAll('.stat-up-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (Player.statPoints > 0) {
+                        const stat = btn.dataset.stat;
+                        Player.stats[stat]++;
+                        Player.statPoints--;
+
+                        // Apply stat effects
+                        if (stat === 'vitality') {
+                            Player.maxHp += 10;
+                            Player.hp = Math.min(Player.hp + 10, Player.maxHp);
+                        }
+                        if (stat === 'intelligence') {
+                            Player.maxMp += 5;
+                            Player.mp = Math.min(Player.mp + 5, Player.maxMp);
+                        }
+
+                        updateHeader();
+                        renderCharacter();
+                        saveGame();
+                    }
+                });
+            });
+
+            // Equipment
+            const equipContainer = document.getElementById('equipment-list');
+            equipContainer.innerHTML = '';
+
+            const weapon = GameData.weapons.find(w => w.id === Player.equipment.weapon);
+            const armor = GameData.armor.find(a => a.id === Player.equipment.armor);
+
+            equipContainer.innerHTML = `
+                <div class="equip-slot">
+                    <div class="slot-icon">${weapon?.icon || '❓'}</div>
+                    <div class="slot-info">
+                        <div class="slot-label">Оружие</div>
+                        <div class="slot-item">${weapon?.name || 'Нет'}</div>
+                        <div style="font-size: 12px; color: #4fc3f7;">+${weapon?.attack || 0} атаки</div>
+                    </div>
+                </div>
+                <div class="equip-slot">
+                    <div class="slot-icon">${armor?.icon || '❓'}</div>
+                    <div class="slot-info">
+                        <div class="slot-label">Броня</div>
+                        <div class="slot-item">${armor?.name || 'Нет'}</div>
+                        <div style="font-size: 12px; color: #4fc3f7;">+${armor?.defense || 0} защиты</div>
+                    </div>
+                </div>
+                <div class="equip-slot">
+                    <div class="slot-icon">🧪</div>
+                    <div class="slot-info">
+                        <div class="slot-label">Зелья HP</div>
+                        <div class="slot-item">${Player.potions} шт.</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                    <div style="margin-bottom: 10px; color: #c9a227;">Боевые характеристики:</div>
+                    <div>Атака: <span style="color: #4fc3f7;">${getPlayerAttack()}</span></div>
+                    <div>Защита: <span style="color: #4fc3f7;">${getPlayerDefense()}</span></div>
+                    <div>Шанс крита: <span style="color: #4fc3f7;">${getCritChance()}%</span></div>
+                </div>
+            `;
+        }
+
+        // ===================== INIT =====================
+        function init() {
+            loadGame();
+            updateHeader();
+            renderQuests();
+            renderArena();
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "quest-rpg",
+  "version": "1.0.0",
+  "description": "Classic Flash-style RPG game with quests, turn-based battles, and stickman animations",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
