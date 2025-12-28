@@ -270,6 +270,27 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .quest-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .quest-list::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+
+        .quest-list::-webkit-scrollbar-thumb {
+            background: #c9a227;
+            border-radius: 4px;
+        }
+
+        .quest-list::-webkit-scrollbar-thumb:hover {
+            background: #dab32f;
         }
 
         .quest-item {
@@ -709,6 +730,27 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .enemy-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .enemy-list::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+
+        .enemy-list::-webkit-scrollbar-thumb {
+            background: #e74c3c;
+            border-radius: 4px;
+        }
+
+        .enemy-list::-webkit-scrollbar-thumb:hover {
+            background: #f15a4a;
         }
 
         .enemy-card {
